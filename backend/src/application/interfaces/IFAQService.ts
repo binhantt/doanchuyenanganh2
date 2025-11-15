@@ -1,0 +1,19 @@
+import { FAQ } from '../../domain/entities/FAQ';
+
+export interface IFAQService {
+  getAllFAQs(): Promise<FAQ[]>;
+  getFAQById(id: string): Promise<FAQ | null>;
+  getActiveFAQs(): Promise<FAQ[]>;
+  getFAQsByCategory(category: string): Promise<FAQ[]>;
+  getFAQsByLanguage(language: string): Promise<FAQ[]>;
+  getFAQsByCategoryAndLanguage(category: string, language: string): Promise<FAQ[]>;
+  createFAQ(data: {
+    question: string;
+    answer: string;
+    category: string;
+    language: string;
+    displayOrder: number;
+  }): Promise<FAQ>;
+  updateFAQ(id: string, data: Partial<FAQ>): Promise<FAQ | null>;
+  deleteFAQ(id: string): Promise<boolean>;
+}

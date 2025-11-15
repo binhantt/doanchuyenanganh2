@@ -1,0 +1,125 @@
+import { Knex } from 'knex';
+import { v4 as uuidv4 } from 'uuid';
+
+export async function seed(knex: Knex): Promise<void> {
+  await knex('decorations').del();
+
+  await knex('decorations').insert([
+    {
+      id: uuidv4(),
+      name: 'Trang trí tiệc cưới Romantic',
+      slug: 'trang-tri-tiec-cuoi-romantic',
+      description: 'Thiết kế và trang trí không gian tiệc cưới sang trọng, lãng mạn với phong cách độc đáo, phù hợp với chủ đề và sở thích của bạn.',
+      theme: 'Romantic',
+      style: 'Sang trọng',
+      base_price: 15000000,
+      features: JSON.stringify([
+        'Thiết kế concept độc đáo',
+        'Backdrop sân khấu cao cấp',
+        'Trang trí bàn tiệc',
+        'Hoa tươi cao cấp',
+        'Ánh sáng nghệ thuật',
+        'Đội ngũ setup chuyên nghiệp',
+      ]),
+      images: JSON.stringify([
+        '/images/decorations/romantic-1.jpg',
+        '/images/decorations/romantic-2.jpg',
+        '/images/decorations/romantic-3.jpg',
+      ]),
+      is_active: true,
+    },
+    {
+      id: uuidv4(),
+      name: 'Trang trí tiệc cưới Vintage',
+      slug: 'trang-tri-tiec-cuoi-vintage',
+      description: 'Phong cách vintage cổ điển, mang đến không gian ấm cúng và đầy hoài niệm cho ngày trọng đại của bạn.',
+      theme: 'Vintage',
+      style: 'Cổ điển',
+      base_price: 12000000,
+      features: JSON.stringify([
+        'Concept vintage độc đáo',
+        'Đồ trang trí cổ điển',
+        'Bàn ghế gỗ vintage',
+        'Hoa khô và hoa tươi kết hợp',
+        'Ánh sáng vàng ấm',
+        'Phụ kiện trang trí handmade',
+      ]),
+      images: JSON.stringify([
+        '/images/decorations/vintage-1.jpg',
+        '/images/decorations/vintage-2.jpg',
+      ]),
+      is_active: true,
+    },
+    {
+      id: uuidv4(),
+      name: 'Trang trí tiệc cưới Modern',
+      slug: 'trang-tri-tiec-cuoi-modern',
+      description: 'Phong cách hiện đại, tối giản nhưng vẫn sang trọng và ấn tượng với những đường nét tinh tế.',
+      theme: 'Modern',
+      style: 'Hiện đại',
+      base_price: 18000000,
+      features: JSON.stringify([
+        'Thiết kế hiện đại tối giản',
+        'Backdrop LED cao cấp',
+        'Trang trí bàn tiệc sang trọng',
+        'Hoa tươi nhập khẩu',
+        'Hệ thống ánh sáng thông minh',
+        'Công nghệ mapping 3D',
+      ]),
+      images: JSON.stringify([
+        '/images/decorations/modern-1.jpg',
+        '/images/decorations/modern-2.jpg',
+        '/images/decorations/modern-3.jpg',
+      ]),
+      is_active: true,
+    },
+    {
+      id: uuidv4(),
+      name: 'Trang trí tiệc cưới Garden',
+      slug: 'trang-tri-tiec-cuoi-garden',
+      description: 'Phong cách vườn xanh mát mẻ, gần gũi với thiên nhiên, tạo không gian thư giãn và thoải mái.',
+      theme: 'Garden',
+      style: 'Thiên nhiên',
+      base_price: 14000000,
+      features: JSON.stringify([
+        'Concept vườn xanh',
+        'Cây xanh và hoa tươi tự nhiên',
+        'Backdrop hoa tươi',
+        'Bàn ghế gỗ tự nhiên',
+        'Ánh sáng tự nhiên',
+        'Trang trí lối đi hoa',
+      ]),
+      images: JSON.stringify([
+        '/images/decorations/garden-1.jpg',
+        '/images/decorations/garden-2.jpg',
+      ]),
+      is_active: true,
+    },
+    {
+      id: uuidv4(),
+      name: 'Trang trí tiệc cưới Luxury',
+      slug: 'trang-tri-tiec-cuoi-luxury',
+      description: 'Phong cách xa hoa, đẳng cấp với những chi tiết trang trí cao cấp nhất, phù hợp cho tiệc cưới quy mô lớn.',
+      theme: 'Luxury',
+      style: 'Xa hoa',
+      base_price: 25000000,
+      features: JSON.stringify([
+        'Thiết kế concept đẳng cấp',
+        'Backdrop pha lê cao cấp',
+        'Hoa tươi nhập khẩu cao cấp',
+        'Trang trí bàn tiệc sang trọng',
+        'Hệ thống ánh sáng nghệ thuật',
+        'Sân khấu 3D mapping',
+        'Đội ngũ setup chuyên nghiệp',
+        'Phụ kiện trang trí cao cấp',
+      ]),
+      images: JSON.stringify([
+        '/images/decorations/luxury-1.jpg',
+        '/images/decorations/luxury-2.jpg',
+        '/images/decorations/luxury-3.jpg',
+        '/images/decorations/luxury-4.jpg',
+      ]),
+      is_active: true,
+    },
+  ]);
+}
