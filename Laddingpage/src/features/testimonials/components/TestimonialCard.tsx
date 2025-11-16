@@ -49,14 +49,14 @@ export default function TestimonialCard({
             {testimonial.avatar ? (
               <Image
                 src={testimonial.avatar}
-                alt={testimonial.name}
+                alt={testimonial.name || 'Customer'}
                 fill
                 className="object-cover"
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-pink-200 to-rose-200 flex items-center justify-center">
                 <span className="text-lg font-bold text-pink-700">
-                  {testimonial.name.charAt(0)}
+                  {testimonial.name ? testimonial.name.charAt(0).toUpperCase() : 'C'}
                 </span>
               </div>
             )}
@@ -65,7 +65,7 @@ export default function TestimonialCard({
           {/* Name and Details */}
           <div className="flex-1">
             <h4 className="font-semibold text-gray-900 group-hover:text-pink-600 transition-colors">
-              {testimonial.name}
+              {testimonial.name || 'Anonymous Customer'}
             </h4>
             <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
               {testimonial.role && <span>{testimonial.role}</span>}

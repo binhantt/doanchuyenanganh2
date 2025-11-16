@@ -3,19 +3,97 @@
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { ArrowLeft, Check, X, Package, Sparkles, ShoppingCart } from 'lucide-react';
-import { getProductDetail } from '../data/productDetails';
 import { useCartStore } from '@/src/features/order/store/useCartStore';
-import { useState } from 'react';
+import { productsApi } from '@/src/features/api';
+import { useState, useEffect } from 'react';
 
 interface ProductDetailPageProps {
   productId: string;
 }
 
+interface ProductDetail {
+  id: string;
+  name: string;
+  price: number;
+  currency: string;
+  description: string;
+  fullDescription?: string;
+  image?: string;
+  images?: string[];
+  category?: string;
+  popular?: boolean;
+  badge?: string;
+  specifications?: {
+    material?: string;
+    size?: string;
+    color?: string;
+    warranty?: string;
+  };
+  detailedFeatures: Array<{ category: string; items: string[] }>;
+  includes: string[];
+  excludes: string[];
+}
+
 export default function ProductDetailPage({ productId }: ProductDetailPageProps) {
   const router = useRouter();
-  const productDetail = getProductDetail(productId);
   const { addItem } = useCartStore();
   const [showAddedMessage, setShowAddedMessage] = useState(false);
+  const [productDetail, setProductDetail] = useState<ProductDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const response = await productsApi.getById(productId);
+        
+        if (response.success && response.data) {
+          const apiProduct = response.data;
+          
+          // Process images - convert relative paths to absolute URLs
+          const processedImages = (apiProduct.images || []).map((img: string) => {
+            if (img.startsWith('http')) {
+              return img;
+            }
+            // Convert relative path to absolute URL
+            return `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}${img}`;
+          });
+          
+          const transformedProduct: ProductDetail = {
+            id: apiProduct.id,
+            name: apiProduct.name,
+            price: apiProduct.price,
+            currency: 'VNĐ',
+            description: apiProduct.description,
+            fullDescription: apiProduct.description,
+            images: processedImages,
+            category: apiProduct.category,
+            popular: apiProduct.isFeatured,
+            badge: apiProduct.isFeatured ? 'Nổi bật' : 'Phổ biến',
+            specifications: {
+              material: apiProduct.material,
+            },
+            detailedFeatures: [
+              {
+                category: 'Thông Tin Sản Phẩm',
+                items: apiProduct.features || ['Chất lượng cao', 'Thiết kế đẹp', 'Giá cả hợp lý'],
+              },
+            ],
+            includes: apiProduct.features || [],
+            excludes: ['Phí vận chuyển', 'Bảo hiểm hàng hóa'],
+          };
+          
+          setProductDetail(transformedProduct);
+        }
+      } catch (error) {
+        console.error('Failed to fetch product:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [productId]);
 
   const handleAddToCart = () => {
     if (!productDetail) return;

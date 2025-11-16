@@ -3,19 +3,140 @@
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { ArrowLeft, Check, X, Clock, Users, Calendar, Sparkles, ShoppingCart } from 'lucide-react';
-import { getPackageDetail } from '../data/packageDetails';
 import { useCartStore } from '@/src/features/order/store/useCartStore';
-import { useState } from 'react';
+import { packagesApi } from '@/src/features/api';
+import { useState, useEffect } from 'react';
+import { defaultPackages } from '../data';
 
 interface PackageDetailPageProps {
   packageId: string;
 }
 
+interface PackageDetail {
+  id: string;
+  name: string;
+  price: number;
+  currency: string;
+  description: string;
+  fullDescription?: string;
+  images?: string[];
+  popular?: boolean;
+  badge?: string;
+  guestCount?: string;
+  duration?: string;
+  setupTime?: string;
+  detailedFeatures: Array<{ category: string; items: string[] }>;
+  includes: string[];
+  excludes: string[];
+}
+
 export default function PackageDetailPage({ packageId }: PackageDetailPageProps) {
   const router = useRouter();
-  const packageDetail = getPackageDetail(packageId);
   const { addItem } = useCartStore();
   const [showAddedMessage, setShowAddedMessage] = useState(false);
+  const [packageDetail, setPackageDetail] = useState<PackageDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch package from API with retry logic
+  useEffect(() => {
+    const fetchPackage = async () => {
+      const maxRetries = 3;
+      let retryCount = 0;
+
+      while (retryCount < maxRetries) {
+        try {
+          setLoading(true);
+          setError(null);
+          
+          // Try to fetch from API
+          const response = await packagesApi.getById(packageId);
+          
+          if (response.success && response.data) {
+            const apiPackage = response.data;
+            
+            // Transform API data to component format
+            const transformedPackage: PackageDetail = {
+              id: apiPackage.id,
+              name: apiPackage.name,
+              price: apiPackage.price,
+              currency: 'VNĐ',
+              description: apiPackage.description,
+              fullDescription: apiPackage.description,
+              images: apiPackage.images || [],
+              popular: apiPackage.isPopular,
+              badge: apiPackage.isPopular ? 'Được yêu thích nhất' : 'Phổ biến',
+              guestCount: '50-500 khách',
+              duration: '4-6 tiếng',
+              setupTime: '2-3 tiếng',
+              detailedFeatures: [
+                {
+                  category: 'Trang Trí & Không Gian',
+                  items: apiPackage.features?.slice(0, 3) || ['Trang trí sảnh tiệc', 'Backdrop chuyên nghiệp', 'Ánh sáng nghệ thuật'],
+                },
+                {
+                  category: 'Dịch Vụ Chính',
+                  items: apiPackage.features?.slice(3, 6) || ['MC dẫn chương trình', 'Âm thanh chất lượng cao', 'Hỗ trợ setup'],
+                },
+              ],
+              includes: apiPackage.features || [],
+              excludes: ['Thức ăn & Đồ uống', 'Hoa tươi cao cấp', 'Xe hoa'],
+            };
+            
+            setPackageDetail(transformedPackage);
+            setLoading(false);
+            return; // Success - exit loop
+          } else {
+            throw new Error('API response không hợp lệ');
+          }
+        } catch (err: any) {
+          retryCount++;
+          
+          // Wait before retrying (exponential backoff)
+          if (retryCount < maxRetries) {
+            await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+          }
+        }
+      }
+
+      // All retries failed - try fallback to static data
+      const staticPackage = defaultPackages.find(pkg => pkg.id === packageId);
+      if (staticPackage) {
+        const transformedPackage: PackageDetail = {
+          id: staticPackage.id,
+          name: staticPackage.name,
+          price: staticPackage.price,
+          currency: staticPackage.currency || 'VNĐ',
+          description: staticPackage.description || '',
+          fullDescription: staticPackage.description || '',
+          images: [],
+          popular: staticPackage.popular,
+          badge: staticPackage.badge || 'Phổ biến',
+          guestCount: '50-500 khách',
+          duration: '4-6 tiếng',
+          setupTime: '2-3 tiếng',
+          detailedFeatures: [
+            {
+              category: 'Trang Trí & Không Gian',
+              items: staticPackage.features?.slice(0, 3) || ['Trang trí sảnh tiệc', 'Backdrop chuyên nghiệp', 'Ánh sáng nghệ thuật'],
+            },
+            {
+              category: 'Dịch Vụ Chính',
+              items: staticPackage.features?.slice(3, 6) || ['MC dẫn chương trình', 'Âm thanh chất lượng cao', 'Hỗ trợ setup'],
+            },
+          ],
+          includes: staticPackage.features || [],
+          excludes: ['Thức ăn & Đồ uống', 'Hoa tươi cao cấp', 'Xe hoa'],
+        };
+        setPackageDetail(transformedPackage);
+      } else {
+        setError('Không thể tải thông tin gói. Vui lòng thử lại sau.');
+      }
+      setLoading(false);
+    };
+
+    fetchPackage();
+  }, [packageId]);
 
   const handleAddToCart = () => {
     if (!packageDetail) return;
@@ -73,14 +194,22 @@ export default function PackageDetailPage({ packageId }: PackageDetailPageProps)
           {/* Left: Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
-              <Image
-                src={packageDetail.images?.[0] || 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800'}
-                alt={packageDetail.name}
-                fill
-                className="object-cover"
-                priority
-              />
+            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl bg-gray-200">
+              {packageDetail.images && packageDetail.images.length > 0 ? (
+                <Image
+                  src={packageDetail.images[0]}
+                  alt={packageDetail.name}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-300 to-gray-400">
+                  <div className="text-center text-gray-600">
+                    <p className="text-lg font-semibold">Không có hình ảnh</p>
+                  </div>
+                </div>
+              )}
               {packageDetail.popular && (
                 <div className="absolute top-6 right-6 bg-gradient-to-r from-rose-500 to-pink-600 text-white px-6 py-3 rounded-full font-semibold flex items-center gap-2 shadow-lg">
                   <Sparkles className="w-5 h-5" />
@@ -93,13 +222,19 @@ export default function PackageDetailPage({ packageId }: PackageDetailPageProps)
             {packageDetail.images && packageDetail.images.length > 1 && (
               <div className="grid grid-cols-3 gap-4">
                 {packageDetail.images.slice(1, 4).map((img, idx) => (
-                  <div key={idx} className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-lg">
-                    <Image
-                      src={img}
-                      alt={`${packageDetail.name} ${idx + 2}`}
-                      fill
-                      className="object-cover hover:scale-110 transition-transform duration-300"
-                    />
+                  <div key={idx} className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-lg bg-gray-200">
+                    {img ? (
+                      <Image
+                        src={img}
+                        alt={`${packageDetail.name} ${idx + 2}`}
+                        fill
+                        className="object-cover hover:scale-110 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-300 to-gray-400">
+                        <span className="text-gray-600 text-sm">Không có hình</span>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

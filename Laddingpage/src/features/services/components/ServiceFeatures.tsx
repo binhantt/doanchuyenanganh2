@@ -9,6 +9,8 @@ import {
   Music 
 } from 'lucide-react';
 import FeatureItem, { FeatureItemProps } from './FeatureItem';
+import { useServices } from '../../api/hooks';
+import { useMemo } from 'react';
 
 export interface ServiceFeaturesProps {
   title?: string;
@@ -52,13 +54,49 @@ const defaultFeatures: Omit<FeatureItemProps, 'delay'>[] = [
   },
 ];
 
+const iconMap: { [key: string]: any } = {
+  'Sparkles': Sparkles,
+  'Palette': Palette,
+  'Camera': Camera,
+  'Image': ImageIcon,
+  'ClipboardList': ClipboardList,
+  'Music': Music,
+};
+
 export default function ServiceFeatures({
   title = 'Dịch Vụ Của Chúng Tôi',
   subtitle = 'Mang đến trải nghiệm hoàn hảo cho ngày trọng đại của bạn với các dịch vụ chuyên nghiệp và tận tâm',
-  features = defaultFeatures,
+  features: defaultFeaturesParam,
 }: ServiceFeaturesProps) {
+  const { services, loading, error } = useServices({ autoFetch: true });
+
+  // Convert API services to feature format
+  const convertedFeatures = useMemo(() => {
+    if (services.length === 0) return defaultFeaturesParam || defaultFeatures;
+    
+    return services.map((service) => ({
+      icon: iconMap[service.icon] || Sparkles,
+      title: service.name,
+      description: service.shortDescription || service.fullDescription || '',
+      slug: service.slug,
+    }));
+  }, [services, defaultFeaturesParam]);
+
+  if (error) {
+    return (
+      <section id="services" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white via-rose-50/30 to-white">
+        <div className="container mx-auto max-w-7xl">
+          <div className="text-center py-12">
+            <p className="text-red-600 font-semibold">Lỗi: {error}</p>
+            <p className="text-gray-600 mt-2">Vui lòng thử lại sau</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section id="services" className="py-5 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white via-rose-50/30 to-white">
+    <section id="services" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white via-rose-50/30 to-white">
       <div className="container mx-auto max-w-7xl">
         {/* Section Header */}
         <div className="text-center mb-16 space-y-4">
@@ -88,19 +126,35 @@ export default function ServiceFeatures({
           </div>
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-600"></div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && convertedFeatures.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-600">Không có dịch vụ nào</p>
+          </div>
+        )}
+
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <FeatureItem
-              key={index}
-              icon={feature.icon}
-              title={feature.title}
-              description={feature.description}
-              slug={feature.slug}
-              delay={index * 100}
-            />
-          ))}
-        </div>
+        {!loading && convertedFeatures.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {convertedFeatures.map((feature, index) => (
+              <FeatureItem
+                key={index}
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.description}
+                slug={feature.slug}
+                delay={index * 100}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -5,7 +5,7 @@ export interface Product {
   currency?: string;
   description?: string;
   category: string;
-  features: string[];
+  features?: string[];
   popular?: boolean;
   badge?: string;
   image?: string;

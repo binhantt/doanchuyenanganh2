@@ -4,15 +4,19 @@ import { useRouter } from 'next/navigation';
 import { Sparkles } from 'lucide-react';
 import PackageCard from './PackageCard';
 import { WeddingPackagesProps } from '../types';
-import { defaultPackages } from '../data';
+import { usePackages } from '../../api/hooks';
 
 export default function WeddingPackages({
   title = 'Gói Dịch Vụ Tiệc Cưới',
   subtitle = 'Lựa chọn gói dịch vụ phù hợp với ngân sách và phong cách của bạn',
-  packages = defaultPackages,
+  packages: defaultPackages,
   onViewDetails,
 }: WeddingPackagesProps) {
   const router = useRouter();
+  const { packages: apiPackages, loading, error } = usePackages({ autoFetch: true });
+  
+  // Use API packages if available, otherwise use default
+  const packages = apiPackages.length > 0 ? apiPackages : (defaultPackages || []);
 
   const handleViewDetails = (packageId: string) => {
     if (onViewDetails) {
@@ -21,10 +25,27 @@ export default function WeddingPackages({
       router.push(`/packages/${packageId}`);
     }
   };
+
+  if (error) {
+    return (
+      <section
+        id="packages"
+        className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white via-rose-50/20 to-white"
+      >
+        <div className="container mx-auto max-w-7xl">
+          <div className="text-center py-12">
+            <p className="text-red-600 font-semibold">Lỗi: {error}</p>
+            <p className="text-gray-600 mt-2">Vui lòng thử lại sau</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section
       id="packages"
-      className="py-5 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white via-rose-50/20 to-white"
+      className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white via-rose-50/20 to-white"
     >
       <div className="container mx-auto max-w-7xl">
         {/* Section Header */}
@@ -57,18 +78,33 @@ export default function WeddingPackages({
           </div>
         </div>
 
-        {/* Packages Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-          {packages.map((pkg, index) => (
-            <PackageCard
-              key={pkg.id}
-              package={pkg}
-              onViewDetails={handleViewDetails}
-              delay={index * 150}
-            />
-          ))}
-        </div>
+        {/* Loading State */}
+        {loading && (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-600"></div>
+          </div>
+        )}
 
+        {/* Empty State */}
+        {!loading && packages.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-600">Không có gói dịch vụ nào</p>
+          </div>
+        )}
+
+        {/* Packages Grid */}
+        {!loading && packages.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+            {packages.map((pkg, index) => (
+              <PackageCard
+                key={pkg.id}
+                package={pkg}
+                onViewDetails={handleViewDetails}
+                delay={index * 150}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

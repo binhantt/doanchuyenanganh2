@@ -6,7 +6,7 @@ export async function seed(knex: Knex): Promise<void> {
 
   await knex('packages').insert([
     {
-      id: uuidv4(),
+      id: 'b7dcfca2-3c14-4d66-9a07-af643b5f2dbb',
       name: 'Gói Basic',
       slug: 'goi-basic',
       description: 'Gói cơ bản cho tiệc cưới ấm cúng',
@@ -18,6 +18,11 @@ export async function seed(knex: Knex): Promise<void> {
         'MC dẫn chương trình',
         'Hỗ trợ setup và dọn dẹp',
         'Tư vấn kế hoạch cơ bản',
+      ]),
+      images: JSON.stringify([
+        'https://images.unsplash.com/photo-1519741497674-611481863552?w=800',
+        'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800',
+        'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=800',
       ]),
       is_popular: false,
       is_active: true,
@@ -38,6 +43,10 @@ export async function seed(knex: Knex): Promise<void> {
         'Album ảnh cưới',
         'Hỗ trợ setup và dọn dẹp',
         'Tư vấn kế hoạch chi tiết',
+      ]),
+      images: JSON.stringify([
+        'https://images.unsplash.com/photo-1519741497674-611481863552?w=800',
+        'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800',
       ]),
       is_popular: true,
       is_active: true,
@@ -61,6 +70,11 @@ export async function seed(knex: Knex): Promise<void> {
         'Hoa tươi cao cấp',
         'Hỗ trợ setup và dọn dẹp',
         'Tư vấn kế hoạch chi tiết',
+      ]),
+      images: JSON.stringify([
+        'https://images.unsplash.com/photo-1519741497674-611481863552?w=800',
+        'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800',
+        'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=800',
       ]),
       is_popular: true,
       is_active: true,
@@ -87,6 +101,11 @@ export async function seed(knex: Knex): Promise<void> {
         'Phục vụ rượu champagne',
         'Pháo hoa nghệ thuật',
         'Hỗ trợ setup và dọn dẹp',
+      ]),
+      images: JSON.stringify([
+        'https://images.unsplash.com/photo-1519741497674-611481863552?w=800',
+        'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800',
+        'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=800',
       ]),
       is_popular: false,
       is_active: true,

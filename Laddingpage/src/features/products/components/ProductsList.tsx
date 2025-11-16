@@ -4,15 +4,18 @@ import { useRouter } from 'next/navigation';
 import { ShoppingBag } from 'lucide-react';
 import ProductCard from './ProductCard';
 import { ProductsListProps } from '../types';
-import { defaultProducts } from '../data';
-
+import { useProducts } from '../../api/hooks';
 export default function ProductsList({
   title = 'Sản Phẩm Cưới',
   subtitle = 'Khám phá các sản phẩm cưới chất lượng cao cho ngày trọng đại của bạn',
-  products = defaultProducts,
+  products: defaultProductsParam,
   onViewDetails,
 }: ProductsListProps) {
   const router = useRouter();
+  const { products: apiProducts, loading, error } = useProducts({ autoFetch: true });
+
+  // Use API products if available, otherwise use default
+  const products = apiProducts.length > 0 ? apiProducts : (defaultProductsParam  || []);
 
   const handleViewDetails = (productId: string) => {
     if (onViewDetails) {
@@ -21,6 +24,19 @@ export default function ProductsList({
       router.push(`/products/${productId}`);
     }
   };
+
+  if (error) {
+    return (
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white via-rose-50/20 to-white">
+        <div className="container mx-auto max-w-7xl">
+          <div className="text-center py-12">
+            <p className="text-red-600 font-semibold">Lỗi: {error}</p>
+            <p className="text-gray-600 mt-2">Vui lòng thử lại sau</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -58,17 +74,33 @@ export default function ProductsList({
           </div>
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-600"></div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && products.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-600">Không có sản phẩm nào</p>
+          </div>
+        )}
+
         {/* Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {products.map((product, index) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onViewDetails={handleViewDetails}
-              delay={index * 150}
-            />
-          ))}
-        </div>
+        {!loading && products.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {products.map((product, index) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onViewDetails={handleViewDetails}
+                delay={index * 150}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

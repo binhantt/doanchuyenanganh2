@@ -9,6 +9,7 @@ interface PackageRow {
   description: string;
   price: number;
   features: string;
+  images?: string;
   is_popular: boolean;
   is_active: boolean;
   created_at: Date;
@@ -28,6 +29,7 @@ export class PackageRepository implements IPackageRepository {
       JSON.parse(row.features),
       Boolean(row.is_popular),
       Boolean(row.is_active),
+      row.images ? JSON.parse(row.images) : [],
       new Date(row.created_at),
       new Date(row.updated_at)
     );
@@ -71,6 +73,7 @@ export class PackageRepository implements IPackageRepository {
       description: pkg.description,
       price: pkg.price,
       features: JSON.stringify(pkg.features),
+      images: JSON.stringify(pkg.images || []),
       is_popular: pkg.isPopular,
       is_active: pkg.isActive,
     });
@@ -86,6 +89,7 @@ export class PackageRepository implements IPackageRepository {
     if (data.description) updateData.description = data.description;
     if (data.price !== undefined) updateData.price = data.price;
     if (data.features) updateData.features = JSON.stringify(data.features);
+    if (data.images) updateData.images = JSON.stringify(data.images);
     if (data.isPopular !== undefined) updateData.is_popular = data.isPopular;
     if (data.isActive !== undefined) updateData.is_active = data.isActive;
 

@@ -3,15 +3,94 @@
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { ArrowLeft, Check, Sparkles, Camera, Heart } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { servicesApi } from '@/src/features/api';
 import { getServiceBySlug } from '../data/servicesData';
 
 interface ServiceDetailPageProps {
   slug: string;
 }
 
+
 export default function ServiceDetailPage({ slug }: ServiceDetailPageProps) {
   const router = useRouter();
-  const service = getServiceBySlug(slug);
+  const [service, setService] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchService = async () => {
+      try {
+        setLoading(true);
+        const response = await servicesApi.getBySlug(slug);
+        
+        if (response.success && response.data) {
+          const apiService = response.data;
+          setService({
+            id: apiService.id,
+            name: apiService.name,
+            slug: apiService.slug,
+            shortDescription: apiService.shortDescription,
+            fullDescription: apiService.fullDescription || apiService.shortDescription,
+            icon: apiService.icon || 'sparkle',
+            features: apiService.features || [],
+            basePrice: apiService.basePrice,
+            isActive: apiService.isActive,
+            gallery: [],
+            detailedFeatures: [
+              {
+                category: 'Dịch Vụ Chính',
+                items: apiService.features || [],
+              },
+            ],
+            packages: [
+              {
+                id: '1',
+                name: 'Gói Cơ Bản',
+                price: apiService.basePrice,
+                features: apiService.features?.slice(0, 3) || [],
+              },
+              {
+                id: '2',
+                name: 'Gói Cao Cấp',
+                price: Math.round(apiService.basePrice * 1.5),
+                popular: true,
+                features: apiService.features || [],
+              },
+              {
+                id: '3',
+                name: 'Gói VIP',
+                price: Math.round(apiService.basePrice * 2),
+                features: [...(apiService.features || []), 'Hỗ trợ 24/7', 'Chỉnh sửa không giới hạn'],
+              },
+            ],
+            faqs: [
+              {
+                question: 'Dịch vụ này bao gồm những gì?',
+                answer: apiService.features?.join(', ') || 'Xem chi tiết dịch vụ ở trên',
+              },
+              {
+                question: 'Có thể tùy chỉnh gói dịch vụ không?',
+                answer: 'Có, chúng tôi có thể tùy chỉnh gói dịch vụ theo nhu cầu của bạn. Vui lòng liên hệ để tư vấn.',
+              },
+            ],
+          });
+        } else {
+          // Fallback to local data
+          const localService = getServiceBySlug(slug);
+          setService(localService);
+        }
+      } catch (error) {
+        console.error('Failed to fetch service:', error);
+        // Fallback to local data
+        const localService = getServiceBySlug(slug);
+        setService(localService);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchService();
+  }, [slug]);
 
   if (!service) {
     return (
@@ -38,10 +117,12 @@ export default function ServiceDetailPage({ slug }: ServiceDetailPageProps) {
   const iconMap: Record<string, any> = {
     sparkles: Sparkles,
     camera: Camera,
+    Camera: Camera,
     sparkle: Heart,
+    Heart: Heart,
   };
 
-  const Icon = iconMap[service.icon] || Sparkles;
+  const Icon = iconMap[service.icon?.toLowerCase()] || iconMap[service.icon] || Sparkles;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-pink-50/30 to-white">
@@ -73,7 +154,7 @@ export default function ServiceDetailPage({ slug }: ServiceDetailPageProps) {
         {/* Gallery */}
         {service.gallery.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-            {service.gallery.map((img, idx) => (
+            {service.gallery.map((img: string, idx: number) => (
               <div
                 key={idx}
                 className="relative aspect-square rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow"
@@ -97,7 +178,7 @@ export default function ServiceDetailPage({ slug }: ServiceDetailPageProps) {
         </h2>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {service.detailedFeatures.map((category, idx) => (
+          {service.detailedFeatures.map((category: any, idx: number) => (
             <div
               key={idx}
               className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-8 border-2 border-rose-200 hover:border-rose-400 transition-colors"
@@ -106,7 +187,7 @@ export default function ServiceDetailPage({ slug }: ServiceDetailPageProps) {
                 {category.category}
               </h3>
               <ul className="space-y-3">
-                {category.items.map((item, itemIdx) => (
+                {category.items.map((item: string, itemIdx: number) => (
                   <li key={itemIdx} className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-rose-600 mt-0.5 flex-shrink-0" />
                     <span className="text-gray-700 text-sm">{item}</span>
@@ -118,61 +199,7 @@ export default function ServiceDetailPage({ slug }: ServiceDetailPageProps) {
         </div>
       </section>
 
-      {/* Packages */}
-      <section className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
-        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-12 text-center">
-          Bảng Giá Dịch Vụ
-        </h2>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {service.packages.map((pkg, idx) => (
-            <div
-              key={idx}
-              className={`relative bg-white rounded-2xl p-8 border-2 transition-all duration-300 ${
-                pkg.popular
-                  ? 'border-rose-400 shadow-2xl scale-105'
-                  : 'border-rose-200 hover:border-rose-300 hover:shadow-xl'
-              }`}
-            >
-              {pkg.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 bg-gradient-to-r from-rose-500 to-pink-600 text-white font-semibold rounded-full text-sm">
-                  Phổ Biến Nhất
-                </div>
-              )}
-
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                {pkg.name}
-              </h3>
-
-              <div className="mb-6 pb-6 border-b-2 border-rose-100">
-                <div className="text-4xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">
-                  {formatPrice(pkg.price)} VNĐ
-                </div>
-              </div>
-
-              <ul className="space-y-3 mb-8">
-                {pkg.features.map((feature, featureIdx) => (
-                  <li key={featureIdx} className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-rose-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700 text-sm">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                onClick={() => router.push('/booking')}
-                className={`w-full py-4 rounded-xl font-semibold transition-all duration-300 ${
-                  pkg.popular
-                    ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white hover:shadow-xl hover:scale-105'
-                    : 'bg-white text-rose-600 border-2 border-rose-300 hover:bg-rose-50'
-                }`}
-              >
-                Đặt Lịch Tư Vấn
-              </button>
-            </div>
-          ))}
-        </div>
-      </section>
+    
 
       {/* FAQs */}
       {service.faqs.length > 0 && (
@@ -182,7 +209,7 @@ export default function ServiceDetailPage({ slug }: ServiceDetailPageProps) {
           </h2>
 
           <div className="space-y-4">
-            {service.faqs.map((faq, idx) => (
+            {service.faqs.map((faq: any, idx: number) => (
               <details
                 key={idx}
                 className="group bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow border-2 border-rose-100"

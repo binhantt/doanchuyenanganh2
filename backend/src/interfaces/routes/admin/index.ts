@@ -88,6 +88,15 @@ const orderRepository = new OrderRepository();
 const orderService = new OrderService(orderRepository);
 const orderController = new OrderController(orderService);
 
+// Promotion DI
+import { PromotionController } from '../../controllers/promotion.controller';
+import { PromotionService } from '../../../application/services/PromotionService';
+import { PromotionRepository } from '../../../infrastructure/repositories/PromotionRepository';
+
+const promotionRepository = new PromotionRepository();
+const promotionService = new PromotionService(promotionRepository);
+const promotionController = new PromotionController(promotionService);
+
 // Define admin route groups
 const adminRouteGroups: RouteGroup[] = [
   {
@@ -402,6 +411,51 @@ const adminRouteGroups: RouteGroup[] = [
         method: 'delete',
         path: '/:id',
         handler: (req, res) => orderController.deleteOrder(req, res),
+      },
+    ],
+  },
+  {
+    basePath: '/promotions',
+    routes: [
+      {
+        method: 'get',
+        path: '/',
+        handler: (req, res) => promotionController.list(req, res),
+      },
+      {
+        method: 'get',
+        path: '/code/:code',
+        handler: (req, res) => promotionController.getByCode(req, res),
+      },
+      {
+        method: 'get',
+        path: '/service/:serviceId',
+        handler: (req, res) => promotionController.getByService(req, res),
+      },
+      {
+        method: 'get',
+        path: '/package/:packageId',
+        handler: (req, res) => promotionController.getByPackage(req, res),
+      },
+      {
+        method: 'get',
+        path: '/:id',
+        handler: (req, res) => promotionController.getById(req, res),
+      },
+      {
+        method: 'post',
+        path: '/',
+        handler: (req, res) => promotionController.create(req, res),
+      },
+      {
+        method: 'put',
+        path: '/:id',
+        handler: (req, res) => promotionController.update(req, res),
+      },
+      {
+        method: 'delete',
+        path: '/:id',
+        handler: (req, res) => promotionController.delete(req, res),
       },
     ],
   },

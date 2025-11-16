@@ -8,6 +8,7 @@ export class Package {
     public readonly features: string[],
     public readonly isPopular: boolean = false,
     public readonly isActive: boolean = true,
+    public readonly images: string[] = [],
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date
   ) {}
