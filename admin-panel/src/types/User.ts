@@ -1,0 +1,18 @@
+export interface User {
+  id: number
+  email: string
+  name: string
+  role: 'admin' | 'user'
+  avatar?: string
+  createdAt: string
+}
+
+export interface LoginCredentials {
+  email: string
+  password: string
+}
+
+export interface LoginResponse {
+  token: string
+  user: User
+}

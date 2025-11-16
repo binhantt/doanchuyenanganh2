@@ -1,0 +1,381 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.admin-layout {
+  min-height: 100vh;
+}
+
+/* ========================================
+   PINK THEME - Wedding Admin Panel
+   ======================================== */
+
+/* Primary Buttons */
+.ant-btn-primary {
+  background: linear-gradient(135deg, #FF4D8A 0%, #FF6B9D 100%) !important;
+  border-color: #FF4D8A !important;
+  box-shadow: 0 2px 8px rgba(255, 77, 138, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-btn-primary:hover {
+  background: linear-gradient(135deg, #D93672 0%, #FF4D8A 100%) !important;
+  border-color: #D93672 !important;
+  box-shadow: 0 4px 12px rgba(217, 54, 114, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+.ant-btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Link Buttons */
+.ant-btn-link {
+  color: #FF4D8A !important;
+}
+
+.ant-btn-link:hover {
+  color: #D93672 !important;
+}
+
+/* Menu Items */
+.ant-menu-item-selected {
+  background: linear-gradient(90deg, #FFF0F6 0%, #FFE5F0 100%) !important;
+  color: #FF4D8A !important;
+  border-right: 3px solid #FF4D8A !important;
+}
+
+.ant-menu-item:hover {
+  color: #FF4D8A !important;
+  background-color: #FFF0F6 !important;
+}
+
+.ant-menu-item-active {
+  color: #FF4D8A !important;
+}
+
+/* Switch */
+.ant-switch-checked {
+  background: linear-gradient(135deg, #FF4D8A 0%, #FF6B9D 100%) !important;
+}
+
+.ant-switch-checked:hover {
+  background: linear-gradient(135deg, #D93672 0%, #FF4D8A 100%) !important;
+}
+
+/* Input Focus */
+.ant-input:focus,
+.ant-input-focused,
+.ant-input:hover {
+  border-color: #FF4D8A !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 138, 0.1) !important;
+}
+
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused {
+  border-color: #FF4D8A !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 138, 0.1) !important;
+}
+
+/* Textarea */
+.ant-input-textarea:focus,
+.ant-input-textarea-focused {
+  border-color: #FF4D8A !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 138, 0.1) !important;
+}
+
+/* Select */
+.ant-select-focused .ant-select-selector,
+.ant-select:hover .ant-select-selector {
+  border-color: #FF4D8A !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 138, 0.1) !important;
+}
+
+.ant-select-item-option-selected {
+  background-color: #FFF0F6 !important;
+  color: #FF4D8A !important;
+}
+
+.ant-select-item-option-active {
+  background-color: #FFE5F0 !important;
+}
+
+/* Pagination */
+.ant-pagination-item-active {
+  border-color: #FF4D8A !important;
+  background: linear-gradient(135deg, #FFF0F6 0%, #FFE5F0 100%) !important;
+}
+
+.ant-pagination-item-active a {
+  color: #FF4D8A !important;
+  font-weight: 600;
+}
+
+.ant-pagination-item:hover {
+  border-color: #FF4D8A !important;
+}
+
+.ant-pagination-item:hover a {
+  color: #FF4D8A !important;
+}
+
+.ant-pagination-next:hover .ant-pagination-item-link,
+.ant-pagination-prev:hover .ant-pagination-item-link {
+  color: #FF4D8A !important;
+  border-color: #FF4D8A !important;
+}
+
+/* Table */
+.ant-table-thead > tr > th {
+  background: linear-gradient(180deg, #FFF0F6 0%, #FFE5F0 100%) !important;
+  color: #D93672 !important;
+  font-weight: 600;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background-color: #FFF0F6 !important;
+}
+
+.ant-table-row-selected > td {
+  background-color: #FFE5F0 !important;
+}
+
+/* Checkbox */
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #FF4D8A !important;
+  border-color: #FF4D8A !important;
+}
+
+.ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.ant-checkbox:hover .ant-checkbox-inner {
+  border-color: #FF4D8A !important;
+}
+
+/* Radio */
+.ant-radio-checked .ant-radio-inner {
+  border-color: #FF4D8A !important;
+  background-color: #FF4D8A !important;
+}
+
+.ant-radio-wrapper:hover .ant-radio-inner {
+  border-color: #FF4D8A !important;
+}
+
+/* Modal */
+.ant-modal-header {
+  background: linear-gradient(135deg, #FFF0F6 0%, #FFE5F0 100%) !important;
+  border-bottom: 2px solid #FFB3CF !important;
+}
+
+.ant-modal-title {
+  color: #D93672 !important;
+  font-weight: 600;
+}
+
+.ant-modal-close:hover {
+  color: #FF4D8A !important;
+}
+
+/* Tabs */
+.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #FF4D8A !important;
+  font-weight: 600;
+}
+
+.ant-tabs-ink-bar {
+  background: linear-gradient(90deg, #FF4D8A 0%, #FF6B9D 100%) !important;
+}
+
+.ant-tabs-tab:hover {
+  color: #FF4D8A !important;
+}
+
+/* Badge */
+.ant-badge-status-processing {
+  background-color: #FF4D8A !important;
+}
+
+.ant-badge-count {
+  background: linear-gradient(135deg, #FF4D8A 0%, #FF6B9D 100%) !important;
+  box-shadow: 0 2px 8px rgba(255, 77, 138, 0.3) !important;
+}
+
+/* Tag */
+.ant-tag-pink {
+  background-color: #FFF0F6 !important;
+  border-color: #FFB3CF !important;
+  color: #D93672 !important;
+}
+
+/* Progress */
+.ant-progress-bg {
+  background: linear-gradient(90deg, #FF4D8A 0%, #FF6B9D 100%) !important;
+}
+
+/* Slider */
+.ant-slider-track {
+  background: linear-gradient(90deg, #FF4D8A 0%, #FF6B9D 100%) !important;
+}
+
+.ant-slider-handle {
+  border-color: #FF4D8A !important;
+}
+
+.ant-slider-handle:hover,
+.ant-slider-handle:focus {
+  border-color: #D93672 !important;
+  box-shadow: 0 0 0 5px rgba(255, 77, 138, 0.2) !important;
+}
+
+/* DatePicker */
+.ant-picker-focused {
+  border-color: #FF4D8A !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 138, 0.1) !important;
+}
+
+.ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
+  background: linear-gradient(135deg, #FF4D8A 0%, #FF6B9D 100%) !important;
+}
+
+.ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
+  border-color: #FF4D8A !important;
+}
+
+/* Upload */
+.ant-upload.ant-upload-select:hover {
+  border-color: #FF4D8A !important;
+}
+
+.ant-upload-list-item:hover {
+  background-color: #FFF0F6 !important;
+}
+
+/* Dropdown */
+.ant-dropdown-menu-item:hover,
+.ant-dropdown-menu-submenu-title:hover {
+  background-color: #FFF0F6 !important;
+  color: #FF4D8A !important;
+}
+
+.ant-dropdown-menu-item-selected {
+  background-color: #FFE5F0 !important;
+  color: #FF4D8A !important;
+}
+
+/* Spin */
+.ant-spin-dot-item {
+  background-color: #FF4D8A !important;
+}
+
+/* Alert */
+.ant-alert-info {
+  background-color: #FFF0F6 !important;
+  border-color: #FFB3CF !important;
+}
+
+.ant-alert-info .ant-alert-icon {
+  color: #FF4D8A !important;
+}
+
+/* Message */
+.ant-message-notice-content {
+  background: white !important;
+  box-shadow: 0 4px 12px rgba(255, 77, 138, 0.15) !important;
+}
+
+/* Notification */
+.ant-notification-notice {
+  box-shadow: 0 4px 12px rgba(255, 77, 138, 0.15) !important;
+}
+
+/* Card */
+.ant-card-head {
+  background: linear-gradient(135deg, #FFF0F6 0%, #FFE5F0 100%) !important;
+  border-bottom: 2px solid #FFB3CF !important;
+}
+
+.ant-card-head-title {
+  color: #D93672 !important;
+  font-weight: 600;
+}
+
+.ant-card:hover {
+  box-shadow: 0 4px 16px rgba(255, 77, 138, 0.2) !important;
+}
+
+/* Statistic */
+.ant-statistic-title {
+  color: #666 !important;
+}
+
+.ant-statistic-content {
+  color: #FF4D8A !important;
+  font-weight: 600;
+}
+
+/* Link */
+a {
+  color: #FF4D8A !important;
+}
+
+a:hover {
+  color: #D93672 !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FFF0F6;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #FFB3CF 0%, #FF4D8A 100%);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #FF4D8A 0%, #D93672 100%);
+}
+
+/* Custom Classes */
+.pink-gradient-bg {
+  background: linear-gradient(135deg, #FFF0F6 0%, #FFE5F0 100%);
+}
+
+.pink-gradient-text {
+  background: linear-gradient(135deg, #FF4D8A 0%, #D93672 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pink-shadow {
+  box-shadow: 0 4px 16px rgba(255, 77, 138, 0.2);
+}
+
+.pink-border {
+  border: 2px solid #FF4D8A;
+}
+
+/* Animations */
+@keyframes pinkPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 138, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(255, 77, 138, 0);
+  }
+}
+
+.pink-pulse {
+  animation: pinkPulse 2s infinite;
+}
