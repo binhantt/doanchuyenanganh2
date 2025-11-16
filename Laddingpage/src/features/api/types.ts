@@ -28,14 +28,20 @@ export interface FilterParams {
 }
 
 // Package types
+export interface PackageFeatures {
+  included: string[];
+  excluded?: string[];
+  highlights?: string[];
+}
+
 export interface Package {
   id: string;
   name: string;
   slug: string;
   description: string;
   price: number;
-  features: string[];
-  images?: string[];
+  features: PackageFeatures;
+  images: string[];
   isPopular?: boolean;
   isActive: boolean;
   createdAt: string;
@@ -43,6 +49,12 @@ export interface Package {
 }
 
 // Service types
+export interface ServiceFeatures {
+  included: string[];
+  excluded: string[];
+  highlights: string[];
+}
+
 export interface Service {
   id: string;
   name: string;
@@ -50,8 +62,9 @@ export interface Service {
   shortDescription: string;
   fullDescription?: string;
   icon?: string;
-  features?: string[];
+  features?: ServiceFeatures;
   basePrice: number;
+  images?: string[];
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -143,7 +156,7 @@ export interface CreatePackageRequest {
   slug: string;
   description: string;
   price: number;
-  features: string[];
+  features: PackageFeatures;
   images?: string[];
   isPopular?: boolean;
   isActive: boolean;
@@ -155,8 +168,9 @@ export interface CreateServiceRequest {
   shortDescription: string;
   fullDescription?: string;
   icon?: string;
-  features?: string[];
+  features?: ServiceFeatures;
   basePrice: number;
+  images?: string[];
   isActive: boolean;
 }
 

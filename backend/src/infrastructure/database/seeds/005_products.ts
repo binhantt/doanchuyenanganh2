@@ -2,133 +2,135 @@ import { Knex } from 'knex';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function seed(knex: Knex): Promise<void> {
-  // Deletes ALL existing entries
+  // Delete existing data
+  await knex('features').where('entity_type', 'product').del();
+  await knex('images').where('entity_type', 'product').del();
   await knex('products').del();
 
-  const now = new Date();
-
-  // Insert seed entries
-  await knex('products').insert([
+  const products = [
     {
       id: uuidv4(),
-      name: 'Nhẫn cưới vàng 18K đính kim cương',
-      slug: 'nhan-cuoi-vang-18k-dinh-kim-cuong',
-      description: 'Nhẫn cưới vàng 18K đính kim cương thiên nhiên, thiết kế tinh tế, sang trọng. Khắc tên miễn phí cho cặp đôi.',
+      name: 'Backdrop Hoa Tươi Cao Cấp',
+      slug: 'backdrop-hoa-tuoi-cao-cap',
+      description: 'Backdrop trang trí bằng hoa tươi nhập khẩu, thiết kế sang trọng',
+      price: 15000000,
+      category: 'backdrop',
+      is_popular: true,
+      is_active: true,
+      features: {
+        included: [
+          'Hoa tươi nhập khẩu',
+          'Thiết kế theo yêu cầu',
+          'Kích thước 3m x 4m',
+          'Setup tại địa điểm',
+          'Bảo quản trong 8 giờ',
+        ],
+        excluded: ['Vận chuyển ngoài 20km', 'Thay đổi thiết kế sau khi setup'],
+        highlights: ['Hoa tươi nhập khẩu', 'Thiết kế theo yêu cầu', 'Kích thước 3m x 4m'],
+      },
+      images: [
+        'https://images.unsplash.com/photo-1519741497674-611481863552?w=800',
+        'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800',
+      ],
+    },
+    {
+      id: uuidv4(),
+      name: 'Bàn Ghế Tiệc Cưới',
+      slug: 'ban-ghe-tiec-cuoi',
+      description: 'Bộ bàn ghế tiệc cưới sang trọng, phù hợp mọi không gian',
+      price: 5000000,
+      category: 'furniture',
+      is_popular: false,
+      is_active: true,
+      features: {
+        included: [
+          'Bàn tròn 10 người',
+          'Ghế có nệm êm ái',
+          'Khăn trải bàn cao cấp',
+          'Setup và thu dọn',
+          'Vệ sinh sạch sẽ',
+        ],
+        excluded: ['Trang trí bàn', 'Hoa để bàn'],
+        highlights: ['Bàn tròn 10 người', 'Ghế có nệm êm ái', 'Khăn trải bàn cao cấp'],
+      },
+      images: ['https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800'],
+    },
+    {
+      id: uuidv4(),
+      name: 'Hệ Thống Âm Thanh Ánh Sáng',
+      slug: 'he-thong-am-thanh-anh-sang',
+      description: 'Hệ thống âm thanh ánh sáng chuyên nghiệp cho tiệc cưới',
       price: 8000000,
-      category: 'Nhẫn Cưới',
-      material: 'Vàng 18K',
-      features: JSON.stringify([
-        'Vàng 18K nguyên chất',
-        'Kim cương thiên nhiên',
-        'Thiết kế tinh tế',
-        'Khắc tên miễn phí'
-      ]),
-      images: JSON.stringify([
-        '/images/products/nhan-cuoi-vang-18k-1.jpg',
-        '/images/products/nhan-cuoi-vang-18k-2.jpg',
-        '/images/products/nhan-cuoi-vang-18k-3.jpg'
-      ]),
-      stock_quantity: 50,
-      is_featured: true,
+      category: 'equipment',
+      is_popular: true,
       is_active: true,
-      created_at: now,
-      updated_at: now,
+      features: {
+        included: [
+          'Loa công suất lớn',
+          'Micro không dây',
+          'Đèn LED sân khấu',
+          'Kỹ thuật viên vận hành',
+          'Backup thiết bị',
+        ],
+        excluded: ['DJ', 'Ban nhạc'],
+        highlights: ['Loa công suất lớn', 'Micro không dây', 'Đèn LED sân khấu'],
+      },
+      images: ['https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800'],
     },
-    {
-      id: uuidv4(),
-      name: 'Nhẫn cưới vàng trắng 18K',
-      slug: 'nhan-cuoi-vang-trang-18k',
-      description: 'Nhẫn cưới vàng trắng 18K, thiết kế hiện đại, thanh lịch. Phù hợp cho các cặp đôi yêu thích phong cách tối giản.',
-      price: 6500000,
-      category: 'Nhẫn Cưới',
-      material: 'Vàng Trắng 18K',
-      features: JSON.stringify([
-        'Vàng trắng 18K',
-        'Thiết kế hiện đại',
-        'Bề mặt bóng loáng',
-        'Khắc tên miễn phí'
-      ]),
-      images: JSON.stringify([
-        '/images/products/nhan-cuoi-vang-trang-1.jpg',
-        '/images/products/nhan-cuoi-vang-trang-2.jpg'
-      ]),
-      stock_quantity: 30,
-      is_featured: true,
-      is_active: true,
-      created_at: now,
-      updated_at: now,
-    },
-    {
-      id: uuidv4(),
-      name: 'Dây chuyền vàng 24K',
-      slug: 'day-chuyen-vang-24k',
-      description: 'Dây chuyền vàng 24K nguyên chất, thiết kế cổ điển, sang trọng. Phù hợp làm quà tặng trong các dịp đặc biệt.',
-      price: 12000000,
-      category: 'Dây Chuyền',
-      material: 'Vàng 24K',
-      features: JSON.stringify([
-        'Vàng 24K nguyên chất',
-        'Thiết kế cổ điển',
-        'Trọng lượng 5 chỉ',
-        'Bảo hành trọn đời'
-      ]),
-      images: JSON.stringify([
-        '/images/products/day-chuyen-vang-24k-1.jpg',
-        '/images/products/day-chuyen-vang-24k-2.jpg'
-      ]),
-      stock_quantity: 20,
-      is_featured: false,
-      is_active: true,
-      created_at: now,
-      updated_at: now,
-    },
-    {
-      id: uuidv4(),
-      name: 'Vòng tay bạc 925',
-      slug: 'vong-tay-bac-925',
-      description: 'Vòng tay bạc 925 cao cấp, thiết kế trẻ trung, năng động. Phù hợp cho mọi lứa tuổi.',
-      price: 1500000,
-      category: 'Vòng Tay',
-      material: 'Bạc 925',
-      features: JSON.stringify([
-        'Bạc 925 cao cấp',
-        'Thiết kế trẻ trung',
-        'Chống dị ứng',
-        'Dễ dàng phối đồ'
-      ]),
-      images: JSON.stringify([
-        '/images/products/vong-tay-bac-925-1.jpg'
-      ]),
-      stock_quantity: 100,
-      is_featured: false,
-      is_active: true,
-      created_at: now,
-      updated_at: now,
-    },
-    {
-      id: uuidv4(),
-      name: 'Nhẫn kim cương 1 carat',
-      slug: 'nhan-kim-cuong-1-carat',
-      description: 'Nhẫn kim cương 1 carat, chất lượng cao, thiết kế sang trọng. Lựa chọn hoàn hảo cho lễ đính hôn.',
-      price: 45000000,
-      category: 'Nhẫn Kim Cương',
-      material: 'Vàng Trắng 18K',
-      features: JSON.stringify([
-        'Kim cương 1 carat',
-        'Độ tinh khiết VVS1',
-        'Màu sắc D-E',
-        'Giấy chứng nhận GIA'
-      ]),
-      images: JSON.stringify([
-        '/images/products/nhan-kim-cuong-1-carat-1.jpg',
-        '/images/products/nhan-kim-cuong-1-carat-2.jpg',
-        '/images/products/nhan-kim-cuong-1-carat-3.jpg'
-      ]),
-      stock_quantity: 5,
-      is_featured: true,
-      is_active: true,
-      created_at: now,
-      updated_at: now,
-    },
-  ]);
+  ];
+
+  // Insert products, features, and images
+  for (const product of products) {
+    const { features, images, ...productData } = product;
+
+    // Insert product
+    await knex('products').insert(productData);
+
+    // Insert features
+    let order = 0;
+    for (const feature of features.included) {
+      await knex('features').insert({
+        id: uuidv4(),
+        entity_id: product.id,
+        entity_type: 'product',
+        feature_text: feature,
+        feature_type: 'included',
+        display_order: order++,
+      });
+    }
+
+    for (const feature of features.excluded) {
+      await knex('features').insert({
+        id: uuidv4(),
+        entity_id: product.id,
+        entity_type: 'product',
+        feature_text: feature,
+        feature_type: 'excluded',
+        display_order: order++,
+      });
+    }
+
+    for (const feature of features.highlights) {
+      await knex('features').insert({
+        id: uuidv4(),
+        entity_id: product.id,
+        entity_type: 'product',
+        feature_text: feature,
+        feature_type: 'highlight',
+        display_order: order++,
+      });
+    }
+
+    // Insert images
+    for (let i = 0; i < images.length; i++) {
+      await knex('images').insert({
+        id: uuidv4(),
+        entity_id: product.id,
+        entity_type: 'product',
+        url: images[i],
+        display_order: i,
+        is_primary: i === 0,
+      });
+    }
+  }
 }

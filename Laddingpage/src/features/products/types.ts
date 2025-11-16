@@ -1,3 +1,9 @@
+export interface ProductFeatures {
+  included: string[];
+  excluded?: string[];
+  highlights?: string[];
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -5,10 +11,10 @@ export interface Product {
   currency?: string;
   description?: string;
   category: string;
-  features?: string[];
+  features: ProductFeatures;
+  images: string[];
   popular?: boolean;
   badge?: string;
-  image?: string;
 }
 
 export interface ProductCardProps {
@@ -32,8 +38,6 @@ export interface DetailedFeatureCategory {
 export interface ProductDetail extends Product {
   fullDescription: string;
   detailedFeatures: DetailedFeatureCategory[];
-  includes: string[];
-  excludes: string[];
   specifications: {
     material?: string;
     size?: string;
@@ -41,5 +45,4 @@ export interface ProductDetail extends Product {
     quantity?: string;
     warranty?: string;
   };
-  images?: string[];
 }

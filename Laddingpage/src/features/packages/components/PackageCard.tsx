@@ -82,7 +82,7 @@ export default function PackageCard({
             Dịch vụ bao gồm:
           </h4>
           <ul className="space-y-3">
-            {pkg.features.map((feature, index) => (
+            {(pkg.features?.included || pkg.features || []).map((feature: string, index: number) => (
               <li
                 key={index}
                 className="flex items-start gap-3 text-gray-700 group/item"

@@ -1,10 +1,17 @@
+export interface PackageFeatures {
+  included: string[];
+  excluded?: string[];
+  highlights?: string[];
+}
+
 export interface Package {
   id: string;
   name: string;
   price: number;
   currency?: string;
   description?: string;
-  features: string[];
+  features: PackageFeatures;
+  images: string[];
   popular?: boolean;
   badge?: string;
 }
@@ -30,10 +37,7 @@ export interface DetailedFeatureCategory {
 export interface PackageDetail extends Package {
   fullDescription: string;
   detailedFeatures: DetailedFeatureCategory[];
-  includes: string[];
-  excludes: string[];
   guestCount: string;
   duration: string;
   setupTime: string;
-  images?: string[];
 }

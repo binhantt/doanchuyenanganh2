@@ -82,7 +82,19 @@ export class OrderController {
 
   async createOrder(req: Request, res: Response): Promise<void> {
     try {
-      const { clientName, clientEmail, clientPhone, weddingDate, guestCount, venue, notes, items, paymentMethod } = req.body;
+      const { 
+        clientName, 
+        clientEmail, 
+        clientPhone, 
+        weddingDate, 
+        guestCount, 
+        venue, 
+        notes, 
+        items, 
+        paymentMethod,
+        promotionCode,
+        discountAmount 
+      } = req.body;
 
       if (!clientName || !clientEmail || !clientPhone || !weddingDate || !paymentMethod || !items) {
         res.status(400).json({
@@ -102,6 +114,8 @@ export class OrderController {
         notes,
         items,
         paymentMethod,
+        promotionCode,
+        discountAmount: discountAmount ? Number(discountAmount) : undefined,
       });
 
       res.status(201).json({
@@ -165,6 +179,47 @@ export class OrderController {
       res.status(500).json({
         success: false,
         message: 'Failed to delete order',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
+  async applyVoucher(req: Request, res: Response): Promise<void> {
+    try {
+      const { voucherCode, totalAmount } = req.body;
+
+      if (!voucherCode || !totalAmount) {
+        res.status(400).json({
+          success: false,
+          message: 'Missing voucher code or total amount',
+        });
+        return;
+      }
+
+      const result = await this.orderService.applyVoucher(voucherCode, Number(totalAmount));
+
+      if (!result.valid) {
+        res.status(400).json({
+          success: false,
+          message: result.message || 'Invalid voucher',
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        data: {
+          voucherCode: result.voucherCode,
+          discountAmount: result.discountAmount,
+          finalAmount: result.finalAmount,
+          discountType: result.discountType,
+          discountValue: result.discountValue,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to apply voucher',
         error: error instanceof Error ? error.message : 'Unknown error',
       });
     }

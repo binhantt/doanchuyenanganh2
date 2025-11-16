@@ -1,11 +1,17 @@
+export interface PackageFeaturesDTO {
+  included: string[];
+  excluded?: string[];
+  highlights?: string[];
+}
+
 export interface PackageDTO {
   id: string;
   name: string;
   slug: string;
   description: string;
   price: number;
-  features: string[];
-  images?: string[];
+  features: PackageFeaturesDTO;
+  images: string[];
   isPopular: boolean;
   isActive: boolean;
   createdAt?: string;
@@ -18,7 +24,8 @@ export interface PackageListDTO {
   slug: string;
   description: string;
   price: number;
-  images?: string[];
+  features: PackageFeaturesDTO;
+  images: string[];
   isPopular: boolean;
   isActive: boolean;
 }
@@ -28,7 +35,7 @@ export interface CreatePackageDTO {
   slug: string;
   description: string;
   price: number;
-  features: string[];
+  features: PackageFeaturesDTO;
   images?: string[];
   isPopular?: boolean;
   isActive?: boolean;
@@ -39,7 +46,7 @@ export interface UpdatePackageDTO {
   slug?: string;
   description?: string;
   price?: number;
-  features?: string[];
+  features?: PackageFeaturesDTO;
   images?: string[];
   isPopular?: boolean;
   isActive?: boolean;

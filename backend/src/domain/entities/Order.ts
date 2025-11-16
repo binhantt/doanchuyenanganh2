@@ -13,6 +13,10 @@ export class Order {
     public readonly totalAmount: number,
     public readonly depositAmount: number,
     public readonly status: 'pending' | 'confirmed' | 'paid' | 'completed' | 'cancelled' = 'pending',
+    public readonly promotionId?: string | null,
+    public readonly promotionCode?: string | null,
+    public readonly discountAmount: number = 0,
+    public readonly finalAmount?: number,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date
   ) {}
@@ -35,6 +39,14 @@ export class Order {
 
   calculateTotal(): number {
     return this.items.reduce((sum, item) => sum + item.subtotal, 0);
+  }
+
+  calculateFinalAmount(): number {
+    return this.totalAmount - this.discountAmount;
+  }
+
+  hasPromotion(): boolean {
+    return !!this.promotionCode && this.discountAmount > 0;
   }
 }
 

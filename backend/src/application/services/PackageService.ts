@@ -31,8 +31,8 @@ export class PackageService implements IPackageService {
       throw new Error('Price must be non-negative');
     }
 
-    if (data.features.length === 0) {
-      throw new Error('Package must have at least one feature');
+    if (!data.features.included || data.features.included.length === 0) {
+      throw new Error('Package must have at least one included feature');
     }
 
     const existing = await this.packageRepository.findBySlug(data.slug);
@@ -47,6 +47,7 @@ export class PackageService implements IPackageService {
       data.description,
       data.price,
       data.features,
+      data.images || [],
       data.isPopular ?? false,
       data.isActive ?? true
     );
@@ -64,8 +65,8 @@ export class PackageService implements IPackageService {
       throw new Error('Price must be non-negative');
     }
 
-    if (data.features !== undefined && data.features.length === 0) {
-      throw new Error('Package must have at least one feature');
+    if (data.features !== undefined && (!data.features.included || data.features.included.length === 0)) {
+      throw new Error('Package must have at least one included feature');
     }
 
     if (data.slug && data.slug !== existing.slug) {

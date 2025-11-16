@@ -1,450 +1,512 @@
-# Wedding Paradise - Landing Page
+# Wedding Paradise - Full Stack Application
 
-Landing page chuyên nghiệp cho dịch vụ tổ chức đám cưới, được xây dựng với **Next.js 15**, **TypeScript**, và **Tailwind CSS v4**. Giao diện hiện đại với theme màu hồng/rose, tối ưu cho trải nghiệm người dùng và chuyển đổi khách hàng.
+Hệ thống quản lý và đặt dịch vụ tổ chức đám cưới chuyên nghiệp, bao gồm **Landing Page** (Next.js 15) và **Backend API** (Node.js + TypeScript).
 
-## 🎯 Mục Tiêu Dự Án
+## 🎯 Tổng Quan Dự Án
 
-Tạo ra một landing page thu hút và chuyên nghiệp để:
-- ✅ Giới thiệu dịch vụ tổ chức đám cưới
-- ✅ Hiển thị các gói dịch vụ và bảng giá
-- ✅ Trưng bày thư viện ảnh đám cưới
-- ✅ Thu thập thông tin khách hàng qua form đặt lịch
-- ✅ Xây dựng niềm tin qua testimonials và quy trình làm việc
-- ✅ Tối ưu SEO và tốc độ tải trang
+Wedding Paradise là một nền tảng full-stack cho phép:
+- ✅ Khách hàng xem và đặt dịch vụ tổ chức đám cưới
+- ✅ Quản lý gói dịch vụ, sản phẩm, và đơn hàng
+- ✅ Hệ thống mã giảm giá và voucher
+- ✅ Thư viện ảnh và testimonials
+- ✅ API RESTful với Clean Architecture
 
-## 🚀 Tính Năng Chính
+---
 
-### 🏠 **Hero Section**
-- Hero banner với gradient background hồng/rose
-- Tiêu đề chính và mô tả thu hút
-- Call-to-action buttons nổi bật
-- Responsive design với animations mượt mà
-- Tối ưu cho first impression
+## 📦 Cấu Trúc Dự Án
 
-### 💎 **Service Features**
-- Giới thiệu các dịch vụ cốt lõi
-- Icon và mô tả rõ ràng
-- Layout grid responsive
-- Hover effects và animations
-- Highlight các giá trị độc đáo
+```
+wedding-paradise/
+├── 📁 Laddingpage/          # Frontend - Next.js 15
+│   ├── app/                 # Next.js App Router
+│   ├── src/                 # Source code
+│   │   ├── features/        # Feature modules
+│   │   │   ├── api/         # API integration
+│   │   │   ├── packages/    # Wedding packages
+│   │   │   ├── services/    # Services
+│   │   │   ├── products/    # Products
+│   │   │   ├── order/       # Order & cart
+│   │   │   ├── gallery/     # Photo gallery
+│   │   │   └── testimonials/# Customer reviews
+│   │   └── components/      # Shared components
+│   └── public/              # Static assets
+│
+└── 📁 backend/              # Backend - Node.js + TypeScript
+    ├── src/
+    │   ├── application/     # Business logic
+    │   │   ├── services/    # Application services
+    │   │   ├── dto/         # Data transfer objects
+    │   │   └── interfaces/  # Service interfaces
+    │   ├── domain/          # Domain entities
+    │   │   ├── entities/    # Business entities
+    │   │   └── repositories/# Repository interfaces
+    │   ├── infrastructure/  # External concerns
+    │   │   ├── database/    # Database setup
+    │   │   │   ├── migrations/
+    │   │   │   └── seeds/
+    │   │   └── repositories/# Repository implementations
+    │   └── interfaces/      # API layer
+    │       ├── controllers/ # HTTP controllers
+    │       ├── routes/      # Route definitions
+    │       └── middlewares/ # Express middlewares
+    └── knexfile.ts          # Database configuration
+```
 
-### 💍 **Wedding Packages**
-- Hiển thị các gói dịch vụ cưới
-- Bảng giá chi tiết và so sánh
-- Feature list cho từng gói
-- Pricing cards với hover effects
-- CTA buttons cho từng gói
-- Badge "Popular" cho gói nổi bật
+---
 
-### 📸 **Gallery Section**
-- Thư viện ảnh đám cưới đẹp mắt
-- Grid layout responsive
-- Lightbox/modal để xem ảnh full size
-- Lazy loading cho performance
-- Showcase portfolio chất lượng cao
+## 🚀 Frontend - Landing Page
 
-### 👥 **Testimonials**
-- Đánh giá và feedback từ khách hàng
-- Avatar, tên, và rating stars
-- Carousel/slider cho nhiều testimonials
-- Social proof để xây dựng niềm tin
-- Quote design đẹp mắt
+### **Công Nghệ**
+- **Next.js 15** - App Router, SSR/SSG
+- **React 19** - Latest features
+- **TypeScript** - Type safety
+- **Tailwind CSS v4** - Styling
+- **Zustand** - State management
+- **Axios** - HTTP client
 
-### 📋 **Process Steps**
-- Quy trình làm việc từng bước
-- Timeline hoặc numbered steps
-- Icon và mô tả cho mỗi bước
-- Giúp khách hàng hiểu rõ flow
-- Tạo sự tin tưởng và chuyên nghiệp
+### **Tính Năng Chính**
 
-### ❓ **FAQ Section**
+#### 🏠 Hero Section
+- Hero banner với gradient background
+- Call-to-action buttons
+- Responsive animations
+
+#### 💍 Wedding Packages
+- Hiển thị gói dịch vụ từ API
+- Pricing cards với features
+- Mã giảm giá tích hợp
+- Chi tiết gói với images
+
+#### 🛍️ Services & Products
+- Danh sách dịch vụ
+- Chi tiết sản phẩm
+- Thêm vào giỏ hàng
+- Áp dụng voucher
+
+#### � Shopping Cart & Checkout
+- Giỏ hàng với Zustand
+- Nhập mã giảm giá
+- Form đặt hàng
+- Validation & error handling
+
+#### 📸 Gallery & Testimonials
+- Thư viện ảnh từ API
+- Đánh giá khách hàng
+- Rating stars
+
+#### ❓ FAQ Section
 - Câu hỏi thường gặp
-- Accordion/collapsible design
-- Giải đáp thắc mắc phổ biến
-- Giảm friction trong quyết định
-- Tối ưu UX
+- Accordion design
 
-### 📞 **Booking Section**
-- Form đặt lịch tư vấn
-- Input fields: tên, email, số điện thoại, ngày cưới, ghi chú
-- Validation và error handling
-- Success message sau khi submit
-- Integration với backend API (future)
-- Lead generation chính
+### **Cài Đặt Frontend**
 
-### 🎨 **UI/UX Design**
-- Theme màu **hồng/rose** nhất quán
-- **Tailwind CSS v4** với custom theme
-- **Radix UI** components cho accessibility
-- **Lucide React** icons
-- Responsive design: mobile, tablet, desktop
-- Smooth animations và transitions
-- Loading states và micro-interactions
-- Optimized typography system
-
-## 🛠️ Công Nghệ Sử Dụng
-
-### **Frontend Framework**
-- **Next.js 15** - App Router, SSR/SSG, Image Optimization
-- **React 19** - Latest features và performance
-- **TypeScript** - Type safety và developer experience
-
-### **Styling & UI**
-- **Tailwind CSS v4** - Utility-first CSS với CSS variables
-- **shadcn/ui** - High-quality React components
-- **Radix UI** - Accessible component primitives
-  - `@radix-ui/react-accordion` - FAQ section
-  - `@radix-ui/react-dialog` - Modals
-  - `@radix-ui/react-tabs` - Tabbed content
-  - `@radix-ui/react-tooltip` - Tooltips
-- **Lucide React** - Beautiful icon library
-- **tw-animate-css** - Tailwind animation utilities
-
-### **State Management & Forms**
-- **Zustand** - Lightweight state management
-- **React Hooks** - Custom hooks cho logic reuse
-- **Axios** - HTTP client cho API calls (future)
-
-### **Development Tools**
-- **ESLint** - Code linting với Next.js config
-- **TypeScript** - Static type checking
-- **PostCSS** - CSS processing
-
-## 📦 Yêu Cầu Hệ Thống
-
-- **Node.js** >= 18.0.0
-- **npm** >= 8.0.0 hoặc **yarn** >= 1.22.0
-- **Git** cho version control
-
-## ▶️ Cài Đặt & Chạy
-
-### 1. Clone Repository
 ```bash
-git clone <repository-url>
 cd Laddingpage
-```
-
-### 2. Cài Đặt Dependencies
-```bash
 npm install
-# hoặc
-yarn install
+npm run dev
 ```
 
-### 3. Cấu Hình Environment
-Tạo file `.env.local`:
+**Chạy tại:** http://localhost:3000
+
+### **Environment Variables**
+
+Tạo file `Laddingpage/.env.local`:
+
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:3000
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=http://localhost:4000
 ```
 
-### 4. Chạy Development Server
+---
+
+## 🔧 Backend - API Server
+
+### **Công Nghệ**
+- **Node.js** + **TypeScript**
+- **Express.js** - Web framework
+- **Knex.js** - Query builder
+- **MySQL** - Database
+- **Clean Architecture** - Design pattern
+- **JWT** - Authentication (future)
+
+### **Architecture Pattern**
+
+```
+Clean Architecture (Layered)
+├── Domain Layer (Entities, Business Rules)
+├── Application Layer (Use Cases, Services)
+├── Infrastructure Layer (Database, External Services)
+└── Interface Layer (Controllers, Routes, Middlewares)
+```
+
+### **API Endpoints**
+
+#### **User/Public Endpoints**
+
+**Services**
+- `GET /api/user/services` - Danh sách dịch vụ
+- `GET /api/user/services/:id` - Chi tiết dịch vụ
+- `GET /api/user/services/slug/:slug` - Dịch vụ theo slug
+
+**Packages**
+- `GET /api/user/packages` - Danh sách gói
+- `GET /api/user/packages/:id` - Chi tiết gói
+- `GET /api/user/packages/slug/:slug` - Gói theo slug
+
+**Products**
+- `GET /api/user/products` - Danh sách sản phẩm
+- `GET /api/user/products/:id` - Chi tiết sản phẩm
+- `GET /api/user/products/slug/:slug` - Sản phẩm theo slug
+
+**Gallery**
+- `GET /api/user/galleries` - Thư viện ảnh
+- `GET /api/user/galleries/:id` - Chi tiết ảnh
+
+**Testimonials**
+- `GET /api/user/testimonials` - Đánh giá khách hàng
+
+**FAQ**
+- `GET /api/user/faqs` - Câu hỏi thường gặp
+
+**Vouchers**
+- `POST /api/user/vouchers/validate` - Validate mã giảm giá
+- `GET /api/user/vouchers/active` - Voucher đang hoạt động
+- `GET /api/user/vouchers/:code` - Voucher theo code
+
+**Orders**
+- `POST /api/user/orders` - Tạo đơn hàng
+- `GET /api/user/orders/:id` - Chi tiết đơn hàng
+- `GET /api/user/orders/email/:email` - Đơn hàng theo email
+
+**Consultations**
+- `POST /api/user/consultations` - Đặt lịch tư vấn
+
+#### **Admin Endpoints**
+
+**Services Management**
+- `GET /api/admin/services` - Quản lý dịch vụ
+- `POST /api/admin/services` - Tạo dịch vụ
+- `PUT /api/admin/services/:id` - Cập nhật dịch vụ
+- `DELETE /api/admin/services/:id` - Xóa dịch vụ
+
+**Packages Management**
+- `GET /api/admin/packages` - Quản lý gói
+- `POST /api/admin/packages` - Tạo gói
+- `PUT /api/admin/packages/:id` - Cập nhật gói
+- `DELETE /api/admin/packages/:id` - Xóa gói
+
+**Products Management**
+- `GET /api/admin/products` - Quản lý sản phẩm
+- `POST /api/admin/products` - Tạo sản phẩm
+- `PUT /api/admin/products/:id` - Cập nhật sản phẩm
+- `DELETE /api/admin/products/:id` - Xóa sản phẩm
+
+**Orders Management**
+- `GET /api/admin/orders` - Quản lý đơn hàng
+- `PUT /api/admin/orders/:id` - Cập nhật trạng thái
+- `DELETE /api/admin/orders/:id` - Xóa đơn hàng
+
+**Vouchers Management**
+- `GET /api/admin/vouchers` - Quản lý voucher
+- `POST /api/admin/vouchers` - Tạo voucher
+- `PUT /api/admin/vouchers/:id` - Cập nhật voucher
+- `DELETE /api/admin/vouchers/:id` - Xóa voucher
+
+### **Database Schema**
+
+**Core Tables:**
+- `services` - Dịch vụ cưới
+- `packages` - Gói dịch vụ
+- `products` - Sản phẩm
+- `orders` - Đơn hàng
+- `order_items` - Chi tiết đơn hàng
+- `vouchers` - Mã giảm giá
+- `promotions` - Khuyến mãi
+- `galleries` - Thư viện ảnh
+- `testimonials` - Đánh giá
+- `faqs` - Câu hỏi thường gặp
+- `consultations` - Lịch tư vấn
+
+**Shared Tables:**
+- `features` - Features cho services/packages/products
+- `images` - Images cho các entities
+
+### **Cài Đặt Backend**
+
+```bash
+cd backend
+npm install
+```
+
+### **Database Setup**
+
+1. **Tạo database MySQL:**
+```sql
+CREATE DATABASE wedding CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+2. **Cấu hình environment:**
+
+Tạo file `backend/.env`:
+
+```env
+# Server
+PORT=4000
+NODE_ENV=development
+
+# Database
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=wedding
+
+# JWT (future)
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRES_IN=7d
+
+# CORS
+CORS_ORIGIN=http://localhost:3000
+```
+
+3. **Chạy migrations:**
+```bash
+npm run migrate:latest
+```
+
+4. **Seed data:**
+```bash
+npm run seed:run
+```
+
+5. **Start server:**
 ```bash
 npm run dev
-# hoặc
-yarn dev
 ```
 
-### 5. Build Production
+**API chạy tại:** http://localhost:4000
+
+### **Available Scripts**
+
 ```bash
-npm run build
-npm run start
-# hoặc
-yarn build
-yarn start
+# Development
+npm run dev              # Start dev server with nodemon
+
+# Database
+npm run migrate:latest   # Run migrations
+npm run migrate:rollback # Rollback migrations
+npm run seed:run         # Seed database
+npm run db:setup         # Migrate + Seed
+
+# Production
+npm run build            # Compile TypeScript
+npm start                # Start production server
 ```
 
-### 6. Lint Code
-```bash
-npm run lint
-# hoặc
-yarn lint
-```
-
-**Ứng dụng sẽ chạy tại:** http://localhost:3000
-
-## 📁 Cấu Trúc Thư Mục
-
-```
-Laddingpage/
-├── 📁 app/                          # Next.js App Router
-│   ├── 📄 layout.tsx                # Root layout với Navbar & Footer
-│   ├── 📄 page.tsx                  # Landing page chính
-│   ├── 📄 globals.css               # Global styles + Tailwind
-│   └── 📄 favicon.ico
-│
-├── 📁 src/                          # Source code
-│   ├── 📁 components/               # Shared components
-│   │   ├── 📄 NavbarWrapper.tsx     # Navbar wrapper
-│   │   └── 📄 TypographyDemo.tsx    # Typography demo
-│   │
-│   ├── 📁 features/                 # Feature-based architecture
-│   │   ├── 📁 landing/              # Hero section
-│   │   │   └── 📄 hero.tsx
-│   │   │
-│   │   ├── 📁 services/             # Service features section
-│   │   │   └── 📄 index.tsx
-│   │   │
-│   │   ├── 📁 packages/             # Wedding packages pricing
-│   │   │   └── 📄 index.tsx
-│   │   │
-│   │   ├── 📁 gallery/              # Photo gallery
-│   │   │   └── 📄 index.tsx
-│   │   │
-│   │   ├── 📁 testimonials/         # Customer reviews
-│   │   │   └── 📄 index.tsx
-│   │   │
-│   │   ├── 📁 process/              # Process steps
-│   │   │   └── 📄 index.tsx
-│   │   │
-│   │   ├── 📁 faq/                  # FAQ section
-│   │   │   └── 📄 index.tsx
-│   │   │
-│   │   ├── 📁 booking/              # Booking form
-│   │   │   └── 📄 index.tsx
-│   │   │
-│   │   └── 📁 footer/               # Footer section
-│   │       └── 📄 index.tsx
-│   │
-│   └── 📁 styles/                   # Style utilities
-│       └── 📄 typography.ts         # Typography system
-│
-├── 📁 components/                   # shadcn/ui components
-│   └── 📁 ui/
-│       ├── 📄 button.tsx
-│       ├── 📄 accordion.tsx
-│       ├── 📄 dialog.tsx
-│       ├── 📄 tabs.tsx
-│       └── ...
-│
-├── 📁 lib/                          # Utility libraries
-│   └── 📄 utils.ts                  # Common utilities
-│
-├── 📁 public/                       # Static assets
-│   ├── 📄 file.svg
-│   ├── 📄 globe.svg
-│   └── ...
-│
-├── 📄 package.json                  # Dependencies & scripts
-├── 📄 tsconfig.json                 # TypeScript config
-├── 📄 next.config.ts                # Next.js config
-├── 📄 components.json               # shadcn/ui config
-├── 📄 postcss.config.mjs            # PostCSS config
-├── 📄 eslint.config.mjs             # ESLint config
-├── 📄 .env.local                    # Environment variables
-├── 📄 .gitignore                    # Git ignore rules
-├── 📄 README.md                     # Documentation (this file)
-├── 📄 SETUP.md                      # Setup guide
-└── 📄 STYLING_GUIDE.md              # Styling guidelines
-```
+---
 
 ## 🎨 Design System
 
 ### **Color Palette**
 ```css
-/* Primary Colors - Rose/Pink Theme */
---color-pink-50: #fdf2f8
---color-pink-100: #fce7f3
---color-pink-600: #ec4899
---color-rose-500: #f43f5e
---color-rose-600: #e11d48
+/* Primary - Rose/Pink Theme */
+--rose-500: #f43f5e
+--rose-600: #e11d48
+--pink-500: #ec4899
+--pink-600: #db2777
 
 /* Gradients */
 bg-gradient-to-r from-rose-500 to-pink-600
-bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100
 bg-gradient-to-b from-white via-pink-50/30 to-white
-
-/* Neutral Colors */
---color-gray-900: #1f2937
---color-gray-600: #6b7280
---color-gray-500: #9ca3af
---color-white: #ffffff
 ```
 
-### **Typography System**
+### **Typography**
 ```tsx
-// Display Text (Hero)
-<h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight">
+// Hero Text
+text-5xl sm:text-6xl lg:text-7xl font-bold
 
 // Section Headings
-<h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">
-
-// Card Titles
-<h3 className="text-xl sm:text-2xl lg:text-3xl font-semibold">
+text-3xl sm:text-4xl lg:text-5xl font-bold
 
 // Body Text
-<p className="text-lg leading-relaxed text-gray-600">
-
-// Small Text
-<p className="text-sm leading-normal text-gray-500">
+text-lg leading-relaxed text-gray-600
 ```
-
-### **Spacing & Layout**
-- **Container**: `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`
-- **Section Padding**: `py-20` (vertical), `px-4 sm:px-6 lg:px-8` (horizontal)
-- **Grid Gap**: `gap-8`, `gap-12`
-- **Border Radius**: `rounded-2xl`, `rounded-full`
-
-### **Components**
-```tsx
-// Primary Button
-<button className="px-8 py-4 bg-gradient-to-r from-rose-500 to-pink-600 text-white font-semibold rounded-full hover:shadow-xl hover:scale-105 transition-all duration-300">
-
-// Card
-<div className="bg-white rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-500 border-2 border-pink-100 hover:border-pink-300">
-
-// Badge
-<div className="inline-flex items-center gap-2 px-4 py-2 bg-pink-100 rounded-full">
-  <span className="text-sm font-medium text-pink-600">Badge</span>
-</div>
-```
-
-## 📱 Responsive Breakpoints
-
-```css
-/* Mobile First Approach */
-sm:  640px   /* Tablet */
-md:  768px   /* Small Desktop */
-lg:  1024px  /* Desktop */
-xl:  1280px  /* Large Desktop */
-2xl: 1536px  /* Extra Large Desktop */
-```
-
-## 🚀 Performance Optimizations
-
-### **Next.js Features**
-- ✅ App Router với Server Components
-- ✅ Automatic code splitting
-- ✅ Image optimization với next/image
-- ✅ Font optimization
-- ✅ Static generation cho landing page
-
-### **Client-Side Optimizations**
-- ✅ Lazy loading components
-- ✅ Optimized images và assets
-- ✅ Minimal JavaScript bundle
-- ✅ CSS optimization với Tailwind
-- ✅ Smooth animations với CSS transforms
-
-## 🔒 Best Practices
-
-### **Code Quality**
-- ✅ TypeScript strict mode
-- ✅ ESLint rules enforcement
-- ✅ Component composition
-- ✅ Feature-based architecture
-- ✅ Reusable components
-
-### **Accessibility**
-- ✅ Semantic HTML
-- ✅ ARIA labels
-- ✅ Keyboard navigation
-- ✅ Focus management
-- ✅ Color contrast compliance (WCAG AA)
-
-### **SEO**
-- ✅ Meta tags optimization
-- ✅ Semantic HTML structure
-- ✅ Fast page load times
-- ✅ Mobile-friendly design
-- ✅ Structured data (future)
-
-## 🎯 Landing Page Sections
-
-### 1. Hero Section
-- **Mục đích**: First impression, thu hút attention
-- **Elements**: Headline, subheadline, CTA buttons, hero image/video
-- **Goal**: Giữ chân visitors, encourage scroll
-
-### 2. Service Features
-- **Mục đích**: Giới thiệu value proposition
-- **Elements**: 3-6 feature cards với icons
-- **Goal**: Highlight unique selling points
-
-### 3. Wedding Packages
-- **Mục đích**: Hiển thị pricing và packages
-- **Elements**: Pricing cards, feature lists, CTA buttons
-- **Goal**: Drive conversions, clear pricing
-
-### 4. Gallery
-- **Mục đích**: Visual proof, showcase work quality
-- **Elements**: Photo grid, lightbox
-- **Goal**: Build trust, inspire customers
-
-### 5. Process Steps
-- **Mục đích**: Explain how it works
-- **Elements**: Numbered steps, icons, descriptions
-- **Goal**: Reduce friction, clarify process
-
-### 6. Testimonials
-- **Mục đích**: Social proof
-- **Elements**: Customer quotes, photos, ratings
-- **Goal**: Build trust and credibility
-
-### 7. FAQ
-- **Mục đích**: Address common concerns
-- **Elements**: Accordion with Q&A
-- **Goal**: Remove objections, provide clarity
-
-### 8. Booking Form
-- **Mục đích**: Lead generation
-- **Elements**: Contact form, validation
-- **Goal**: Capture leads, schedule consultations
-
-## 🐛 Known Issues & Future Improvements
-
-### **Current Limitations**
-- ⚠️ No backend integration yet (form submissions)
-- ⚠️ No CMS for content management
-- ⚠️ No analytics tracking
-- ⚠️ No A/B testing setup
-
-### **Planned Features**
-- 🔜 Backend API integration cho booking form
-- 🔜 Email notifications cho form submissions
-- 🔜 Google Analytics / Facebook Pixel
-- 🔜 CMS integration (Sanity/Contentful)
-- 🔜 Multi-language support (i18n)
-- 🔜 Blog section
-- 🔜 Live chat widget
-- 🔜 Video testimonials
-- 🔜 Interactive pricing calculator
-
-## 📊 Conversion Optimization
-
-### **CTA Strategy**
-- Primary CTA: "Đặt Lịch Tư Vấn" (Book Consultation)
-- Secondary CTA: "Xem Bảng Giá" (View Pricing)
-- Multiple CTA placements throughout page
-
-### **Trust Signals**
-- Customer testimonials với photos
-- Portfolio gallery
-- Process transparency
-- Clear pricing
-- Professional design
-
-### **Mobile Optimization**
-- Touch-friendly buttons (min 44x44px)
-- Fast loading times
-- Simplified navigation
-- Sticky CTA button (future)
-
-## 📞 Support & Contact
-
-- **Developer**: Wedding Paradise Team
-- **Email**: dev@weddingparadise.com
-- **Documentation**: See SETUP.md and STYLING_GUIDE.md
-- **Issue Tracking**: GitHub Issues
 
 ---
 
-**Wedding Paradise Landing Page** - Tạo nên những khoảnh khắc đáng nhớ nhất! 💒✨
+## 🔄 API Integration Flow
 
-## 📚 Tài Liệu Liên Quan
+### **1. Fetch Services/Packages/Products**
+```typescript
+// Frontend
+import { servicesApi, packagesApi, productsApi } from '@/src/features/api';
 
-- [SETUP.md](./Laddingpage/SETUP.md) - Hướng dẫn setup chi tiết
-- [STYLING_GUIDE.md](./Laddingpage/STYLING_GUIDE.md) - Quy chuẩn styling và design system
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Tailwind CSS v4](https://tailwindcss.com/docs)
-- [Radix UI](https://www.radix-ui.com/)
+const services = await servicesApi.getAll();
+const packages = await packagesApi.getAll();
+const products = await productsApi.getAll();
+```
+
+### **2. Apply Voucher**
+```typescript
+const result = await vouchersApi.validate({
+  code: 'FREESHIP',
+  orderAmount: 50000000
+});
+
+if (result.data.valid) {
+  // Apply discount
+  const discount = result.data.discountAmount;
+}
+```
+
+### **3. Create Order**
+```typescript
+const order = await ordersApi.create({
+  clientName: 'Nguyễn Văn A',
+  clientEmail: 'email@example.com',
+  clientPhone: '0123456789',
+  items: cartItems,
+  weddingDate: '2025-12-25',
+  guestCount: 100,
+  venue: 'Khách sạn ABC',
+  notes: 'Ghi chú',
+  paymentMethod: 'bank_transfer',
+  promotionCode: 'FREESHIP',
+  discountAmount: 5000000
+});
+```
+
+---
+
+## 📊 Data Flow
+
+```
+User Action (Frontend)
+    ↓
+API Call (Axios)
+    ↓
+Backend Route
+    ↓
+Controller
+    ↓
+Service (Business Logic)
+    ↓
+Repository (Data Access)
+    ↓
+Database (MySQL)
+    ↓
+Response back to Frontend
+```
+
+---
+
+## 🔒 Security Features
+
+- ✅ CORS configuration
+- ✅ Input validation
+- ✅ SQL injection prevention (Knex.js)
+- ✅ Error handling
+- ✅ Environment variables
+- 🔜 JWT authentication
+- 🔜 Rate limiting
+- 🔜 Request sanitization
+
+---
+
+## 🚀 Deployment
+
+### **Frontend (Vercel)**
+```bash
+cd Laddingpage
+vercel deploy
+```
+
+### **Backend (Railway/Heroku)**
+```bash
+cd backend
+# Set environment variables
+# Deploy using platform CLI
+```
+
+### **Database (PlanetScale/AWS RDS)**
+- Setup MySQL database
+- Run migrations
+- Update connection string
+
+---
+
+## 📝 API Response Format
+
+### **Success Response**
+```json
+{
+  "success": true,
+  "data": { ... },
+  "message": "Operation successful"
+}
+```
+
+### **Error Response**
+```json
+{
+  "success": false,
+  "message": "Error message",
+  "errors": [
+    {
+      "field": "email",
+      "message": "Invalid email format"
+    }
+  ]
+}
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### **Frontend Issues**
+- Port 3000 đã được sử dụng: `npx kill-port 3000`
+- API connection failed: Kiểm tra `NEXT_PUBLIC_API_URL`
+- Build errors: `rm -rf .next && npm run build`
+
+### **Backend Issues**
+- Port 4000 đã được sử dụng: `npx kill-port 4000`
+- Database connection failed: Kiểm tra `.env` credentials
+- Migration errors: `npm run migrate:rollback` rồi `npm run migrate:latest`
+
+---
+
+## 📚 Documentation
+
+- [Frontend README](./Laddingpage/README.md)
+- [Backend API Routes](./backend/API_ROUTES.md)
+- [Backend Architecture](./backend/ARCHITECTURE.md)
+- [API Integration Guide](./Laddingpage/API_INTEGRATION_GUIDE.md)
+
+---
+
+## 🤝 Contributing
+
+1. Fork the project
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+## 👥 Team
+
+**Wedding Paradise Development Team**
+- Frontend: Next.js + TypeScript
+- Backend: Node.js + Clean Architecture
+- Database: MySQL + Knex.js
+
+---
+
+**Wedding Paradise** - Tạo nên những khoảnh khắc đáng nhớ nhất! 💒✨

@@ -1,4 +1,4 @@
-import { IServiceRepository } from '../../domain/repositories/IServiceRepository';
+;import { IServiceRepository } from '../../domain/repositories/IServiceRepository';
 import { Service } from '../../domain/entities/Service';
 import { db } from '../database/connection';
 
@@ -9,7 +9,6 @@ interface ServiceRow {
   short_description: string;
   full_description: string;
   icon: string;
-  features: string;
   base_price: number;
   is_active: boolean;
   created_at: Date;
@@ -27,7 +26,6 @@ export class ServiceRepository implements IServiceRepository {
       row.short_description,
       row.full_description,
       row.icon,
-      JSON.parse(row.features),
       Number(row.base_price),
       Boolean(row.is_active),
       new Date(row.created_at),
@@ -35,26 +33,56 @@ export class ServiceRepository implements IServiceRepository {
     );
   }
 
+  private async loadFeaturesAndImages(service: Service): Promise<any> {
+    // Load features
+    const features = await db('features')
+      .where({ entity_id: service.id, entity_type: 'service' })
+      .orderBy('display_order', 'asc');
+
+    const featuresObj = {
+      included: features.filter((f) => f.feature_type === 'included').map((f) => f.feature_text),
+      excluded: features.filter((f) => f.feature_type === 'excluded').map((f) => f.feature_text),
+      highlights: features.filter((f) => f.feature_type === 'highlight').map((f) => f.feature_text),
+    };
+
+    // Load images
+    const images = await db('images')
+      .where({ entity_id: service.id, entity_type: 'service' })
+      .orderBy('display_order', 'asc');
+
+    return {
+      ...service,
+      features: featuresObj,
+      images: images.map((img) => img.url),
+    };
+  }
+
   async findAll(): Promise<Service[]> {
     const rows = await db<ServiceRow>(this.tableName).select('*');
-    return rows.map((row) => this.mapRowToEntity(row));
+    const services = rows.map((row) => this.mapRowToEntity(row));
+    return Promise.all(services.map((s) => this.loadFeaturesAndImages(s)));
   }
 
   async findById(id: string): Promise<Service | null> {
     const row = await db<ServiceRow>(this.tableName).where({ id }).first();
-    return row ? this.mapRowToEntity(row) : null;
+    if (!row) return null;
+    const service = this.mapRowToEntity(row);
+    return this.loadFeaturesAndImages(service);
   }
 
   async findBySlug(slug: string): Promise<Service | null> {
     const row = await db<ServiceRow>(this.tableName).where({ slug }).first();
-    return row ? this.mapRowToEntity(row) : null;
+    if (!row) return null;
+    const service = this.mapRowToEntity(row);
+    return this.loadFeaturesAndImages(service);
   }
 
   async findActive(): Promise<Service[]> {
     const rows = await db<ServiceRow>(this.tableName)
       .where({ is_active: true })
       .select('*');
-    return rows.map((row) => this.mapRowToEntity(row));
+    const services = rows.map((row) => this.mapRowToEntity(row));
+    return Promise.all(services.map((s) => this.loadFeaturesAndImages(s)));
   }
 
   async create(service: Service): Promise<Service> {
@@ -65,7 +93,6 @@ export class ServiceRepository implements IServiceRepository {
       short_description: service.shortDescription,
       full_description: service.fullDescription,
       icon: service.icon,
-      features: JSON.stringify(service.features),
       base_price: service.basePrice,
       is_active: service.isActive,
     });
@@ -81,7 +108,6 @@ export class ServiceRepository implements IServiceRepository {
     if (data.shortDescription) updateData.short_description = data.shortDescription;
     if (data.fullDescription) updateData.full_description = data.fullDescription;
     if (data.icon) updateData.icon = data.icon;
-    if (data.features) updateData.features = JSON.stringify(data.features);
     if (data.basePrice !== undefined) updateData.base_price = data.basePrice;
     if (data.isActive !== undefined) updateData.is_active = data.isActive;
 

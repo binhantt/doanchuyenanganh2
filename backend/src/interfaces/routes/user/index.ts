@@ -83,6 +83,24 @@ const orderRepository = new OrderRepository();
 const orderService = new OrderService(orderRepository);
 const orderController = new OrderController(orderService);
 
+// Promotion DI
+import { PromotionController } from '../../controllers/promotion.controller';
+import { PromotionService } from '../../../application/services/PromotionService';
+import { PromotionRepository } from '../../../infrastructure/repositories/PromotionRepository';
+
+const promotionRepository = new PromotionRepository();
+const promotionService = new PromotionService(promotionRepository);
+const promotionController = new PromotionController(promotionService);
+
+// Voucher DI
+import { VoucherController } from '../../controllers/voucher.controller';
+import { VoucherService } from '../../../application/services/VoucherService';
+import { VoucherRepository } from '../../../infrastructure/repositories/VoucherRepository';
+
+const voucherRepository = new VoucherRepository();
+const voucherService = new VoucherService(voucherRepository);
+const voucherController = new VoucherController(voucherService);
+
 // Define user route groups
 const userRouteGroups: RouteGroup[] = [
   {
@@ -302,12 +320,47 @@ const userRouteGroups: RouteGroup[] = [
     ],
   },
   {
+    basePath: '/promotions',
+    routes: [
+      {
+        method: 'get',
+        path: '/code/:code',
+        handler: (req, res) => promotionController.getByCode(req, res),
+      },
+    ],
+  },
+  {
+    basePath: '/vouchers',
+    routes: [
+      {
+        method: 'post',
+        path: '/validate',
+        handler: (req, res) => voucherController.validateVoucher(req, res),
+      },
+      {
+        method: 'get',
+        path: '/active',
+        handler: (req, res) => voucherController.getActiveVouchers(req, res),
+      },
+      {
+        method: 'get',
+        path: '/:code',
+        handler: (req, res) => voucherController.getVoucherByCode(req, res),
+      },
+    ],
+  },
+  {
     basePath: '/orders',
     routes: [
       {
         method: 'post',
         path: '/',
         handler: (req, res) => orderController.createOrder(req, res),
+      },
+      {
+        method: 'post',
+        path: '/apply-voucher',
+        handler: (req, res) => orderController.applyVoucher(req, res),
       },
       {
         method: 'get',

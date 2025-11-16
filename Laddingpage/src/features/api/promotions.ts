@@ -101,12 +101,12 @@ export const promotionsApi = {
   },
 
   /**
-   * Get promotion by code (admin only)
+   * Get promotion by code (public - for validation)
    */
   async getByCode(code: string): Promise<ApiResponse<Promotion>> {
     try {
       const response = await apiClient.get(
-        `${API_CONFIG.ENDPOINTS.ADMIN.PROMOTIONS}/code/${code}`
+        `${API_CONFIG.ENDPOINTS.USER.PROMOTIONS}/code/${code}`
       );
       return response.data;
     } catch (error) {

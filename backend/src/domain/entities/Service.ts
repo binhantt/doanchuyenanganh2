@@ -6,7 +6,6 @@ export class Service {
     public readonly shortDescription: string,
     public readonly fullDescription: string,
     public readonly icon: string,
-    public readonly features: string[],
     public readonly basePrice: number,
     public readonly isActive: boolean = true,
     public readonly createdAt?: Date,
@@ -17,11 +16,7 @@ export class Service {
     return this.isActive;
   }
 
-  hasFeature(feature: string): boolean {
-    return this.features.includes(feature);
-  }
-
-  calculatePrice(quantity: number = 1): number {
-    return this.basePrice * quantity;
+  calculateDiscount(discountPercent: number): number {
+    return this.basePrice * (1 - discountPercent / 100);
   }
 }

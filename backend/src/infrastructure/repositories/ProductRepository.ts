@@ -6,6 +6,24 @@ import { v4 as uuidv4 } from 'uuid';
 export class ProductRepository implements IProductRepository {
   private readonly tableName = 'products';
 
+  private async loadFeaturesAndImages(productId: string): Promise<{ features: string[]; images: string[] }> {
+    // Load features
+    const featuresRows = await db('features')
+      .where({ entity_id: productId, entity_type: 'product' })
+      .orderBy('display_order', 'asc');
+
+    const features = featuresRows.map((row) => row.feature_text);
+
+    // Load images
+    const imagesRows = await db('images')
+      .where({ entity_id: productId, entity_type: 'product' })
+      .orderBy('display_order', 'asc');
+
+    const images = imagesRows.map((row) => row.url);
+
+    return { features, images };
+  }
+
   async findAll(filters?: { category?: string; isActive?: boolean; isFeatured?: boolean }): Promise<Product[]> {
     let query = db(this.tableName);
 
@@ -20,7 +38,7 @@ export class ProductRepository implements IProductRepository {
     }
 
     const rows = await query.orderBy('created_at', 'desc');
-    return rows.map(this.mapToEntity);
+    return Promise.all(rows.map((row) => this.mapToEntity(row)));
   }
 
   async findById(id: string): Promise<Product | null> {
@@ -35,55 +53,139 @@ export class ProductRepository implements IProductRepository {
 
   async create(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<Product> {
     const id = uuidv4();
-    const now = new Date();
+    const trx = await db.transaction();
 
-    const data = {
-      id,
-      name: product.name,
-      slug: product.slug,
-      description: product.description,
-      price: product.price,
-      category: product.category,
-      material: product.material,
-      features: JSON.stringify(product.features),
-      images: JSON.stringify(product.images),
-      stock_quantity: product.stockQuantity,
-      is_featured: product.isFeatured,
-      is_active: product.isActive,
-      created_at: now,
-      updated_at: now,
-    };
+    try {
+      // Insert product
+      await trx(this.tableName).insert({
+        id,
+        name: product.name,
+        slug: product.slug,
+        description: product.description,
+        price: product.price,
+        category: product.category,
+        material: product.material,
+        stock_quantity: product.stockQuantity,
+        is_featured: product.isFeatured,
+        is_active: product.isActive,
+      });
 
-    await db(this.tableName).insert(data);
-    const created = await this.findById(id);
-    if (!created) throw new Error('Failed to create product');
-    return created;
+      // Insert features
+      for (let i = 0; i < product.features.length; i++) {
+        await trx('features').insert({
+          id: uuidv4(),
+          entity_id: id,
+          entity_type: 'product',
+          feature_text: product.features[i],
+          feature_type: 'included',
+          display_order: i,
+        });
+      }
+
+      // Insert images
+      for (let i = 0; i < product.images.length; i++) {
+        await trx('images').insert({
+          id: uuidv4(),
+          entity_id: id,
+          entity_type: 'product',
+          url: product.images[i],
+          display_order: i,
+          is_primary: i === 0,
+        });
+      }
+
+      await trx.commit();
+      const created = await this.findById(id);
+      if (!created) throw new Error('Failed to create product');
+      return created;
+    } catch (error) {
+      await trx.rollback();
+      throw error;
+    }
   }
 
   async update(id: string, product: Partial<Product>): Promise<Product | null> {
-    const data: any = {
-      updated_at: new Date(),
-    };
+    const trx = await db.transaction();
 
-    if (product.name !== undefined) data.name = product.name;
-    if (product.slug !== undefined) data.slug = product.slug;
-    if (product.description !== undefined) data.description = product.description;
-    if (product.price !== undefined) data.price = product.price;
-    if (product.category !== undefined) data.category = product.category;
-    if (product.material !== undefined) data.material = product.material;
-    if (product.features !== undefined) data.features = JSON.stringify(product.features);
-    if (product.images !== undefined) data.images = JSON.stringify(product.images);
-    if (product.stockQuantity !== undefined) data.stock_quantity = product.stockQuantity;
-    if (product.isFeatured !== undefined) data.is_featured = product.isFeatured;
-    if (product.isActive !== undefined) data.is_active = product.isActive;
+    try {
+      const data: any = {
+        updated_at: new Date(),
+      };
 
-    const updated = await db(this.tableName).where({ id }).update(data);
-    return updated ? this.findById(id) : null;
+      if (product.name !== undefined) data.name = product.name;
+      if (product.slug !== undefined) data.slug = product.slug;
+      if (product.description !== undefined) data.description = product.description;
+      if (product.price !== undefined) data.price = product.price;
+      if (product.category !== undefined) data.category = product.category;
+      if (product.material !== undefined) data.material = product.material;
+      if (product.stockQuantity !== undefined) data.stock_quantity = product.stockQuantity;
+      if (product.isFeatured !== undefined) data.is_featured = product.isFeatured;
+      if (product.isActive !== undefined) data.is_active = product.isActive;
+
+      const updated = await trx(this.tableName).where({ id }).update(data);
+
+      if (updated === 0) {
+        await trx.rollback();
+        return null;
+      }
+
+      // Update features if provided
+      if (product.features) {
+        await trx('features').where({ entity_id: id, entity_type: 'product' }).del();
+
+        for (let i = 0; i < product.features.length; i++) {
+          await trx('features').insert({
+            id: uuidv4(),
+            entity_id: id,
+            entity_type: 'product',
+            feature_text: product.features[i],
+            feature_type: 'included',
+            display_order: i,
+          });
+        }
+      }
+
+      // Update images if provided
+      if (product.images) {
+        await trx('images').where({ entity_id: id, entity_type: 'product' }).del();
+
+        for (let i = 0; i < product.images.length; i++) {
+          await trx('images').insert({
+            id: uuidv4(),
+            entity_id: id,
+            entity_type: 'product',
+            url: product.images[i],
+            display_order: i,
+            is_primary: i === 0,
+          });
+        }
+      }
+
+      await trx.commit();
+      return this.findById(id);
+    } catch (error) {
+      await trx.rollback();
+      throw error;
+    }
   }
 
   async delete(id: string): Promise<boolean> {
-    const deleted = await db(this.tableName).where({ id }).delete();
-    return deleted > 0;
+    const trx = await db.transaction();
+
+    try {
+      // Delete related features and images
+      await trx('features').where({ entity_id: id, entity_type: 'product' }).del();
+      await trx('images').where({ entity_id: id, entity_type: 'product' }).del();
+
+      // Delete product
+      const deleted = await trx(this.tableName).where({ id }).delete();
+
+      await trx.commit();
+      return deleted > 0;
+    } catch (error) {
+      await trx.rollback();
+      throw error;
+    }
   }
 
   async updateStock(id: string, quantity: number): Promise<boolean> {
@@ -96,7 +198,9 @@ export class ProductRepository implements IProductRepository {
     return updated > 0;
   }
 
-  private mapToEntity(row: any): Product {
+  private async mapToEntity(row: any): Promise<Product> {
+    const { features, images } = await this.loadFeaturesAndImages(row.id);
+
     return new Product(
       row.id,
       row.name,
@@ -105,8 +209,8 @@ export class ProductRepository implements IProductRepository {
       parseFloat(row.price),
       row.category,
       row.material,
-      JSON.parse(row.features),
-      JSON.parse(row.images),
+      features,
+      images,
       row.stock_quantity,
       row.is_featured,
       row.is_active,

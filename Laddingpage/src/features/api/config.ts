@@ -38,6 +38,7 @@ export const API_CONFIG = {
       ORDERS: '/user/orders',
       DECORATIONS: '/user/decorations',
       VOUCHERS: '/user/vouchers',
+      PROMOTIONS: '/user/promotions',
     },
     // Admin endpoints
     ADMIN: {

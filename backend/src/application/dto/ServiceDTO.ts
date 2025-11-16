@@ -1,3 +1,9 @@
+export interface ServiceFeaturesDTO {
+  included: string[];
+  excluded: string[];
+  highlights: string[];
+}
+
 export interface ServiceDTO {
   id: string;
   name: string;
@@ -5,21 +11,12 @@ export interface ServiceDTO {
   shortDescription: string;
   fullDescription: string;
   icon: string;
-  features: string[];
   basePrice: number;
+  features: ServiceFeaturesDTO;
+  images: string[];
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
-}
-
-export interface ServiceListDTO {
-  id: string;
-  name: string;
-  slug: string;
-  shortDescription: string;
-  icon: string;
-  basePrice: number;
-  isActive: boolean;
 }
 
 export interface CreateServiceDTO {
@@ -28,8 +25,9 @@ export interface CreateServiceDTO {
   shortDescription: string;
   fullDescription: string;
   icon: string;
-  features: string[];
   basePrice: number;
+  features: ServiceFeaturesDTO;
+  images?: string[];
   isActive?: boolean;
 }
 
@@ -39,7 +37,8 @@ export interface UpdateServiceDTO {
   shortDescription?: string;
   fullDescription?: string;
   icon?: string;
-  features?: string[];
   basePrice?: number;
+  features?: ServiceFeaturesDTO;
+  images?: string[];
   isActive?: boolean;
 }

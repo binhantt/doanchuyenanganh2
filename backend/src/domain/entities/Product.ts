@@ -6,10 +6,10 @@ export class Product {
     public readonly description: string,
     public readonly price: number,
     public readonly category: string,
-    public readonly material: string,
+    public readonly material: string | null,
     public readonly features: string[],
     public readonly images: string[],
-    public readonly stockQuantity: number = 0,
+    public readonly stockQuantity: number,
     public readonly isFeatured: boolean = false,
     public readonly isActive: boolean = true,
     public readonly createdAt?: Date,
@@ -20,15 +20,7 @@ export class Product {
     return this.isActive && this.stockQuantity > 0;
   }
 
-  hasStock(quantity: number = 1): boolean {
-    return this.stockQuantity >= quantity;
-  }
-
   calculateDiscount(discountPercent: number): number {
     return this.price * (1 - discountPercent / 100);
-  }
-
-  getPrimaryImage(): string | null {
-    return this.images.length > 0 ? this.images[0] : null;
   }
 }

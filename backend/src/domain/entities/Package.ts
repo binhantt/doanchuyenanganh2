@@ -1,3 +1,9 @@
+export interface PackageFeatures {
+  included: string[];
+  excluded?: string[];
+  highlights?: string[];
+}
+
 export class Package {
   constructor(
     public readonly id: string,
@@ -5,20 +11,16 @@ export class Package {
     public readonly slug: string,
     public readonly description: string,
     public readonly price: number,
-    public readonly features: string[],
+    public readonly features: PackageFeatures,
+    public readonly images: string[] = [],
     public readonly isPopular: boolean = false,
     public readonly isActive: boolean = true,
-    public readonly images: string[] = [],
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date
   ) {}
 
   isAvailable(): boolean {
     return this.isActive;
-  }
-
-  hasFeature(feature: string): boolean {
-    return this.features.includes(feature);
   }
 
   calculateDiscount(discountPercent: number): number {

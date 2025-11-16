@@ -97,6 +97,16 @@ const promotionRepository = new PromotionRepository();
 const promotionService = new PromotionService(promotionRepository);
 const promotionController = new PromotionController(promotionService);
 
+// Voucher DI
+import { VoucherController } from '../../controllers/voucher.controller';
+import { VoucherService } from '../../../application/services/VoucherService';
+import { VoucherRepository } from '../../../infrastructure/repositories/VoucherRepository';
+
+
+const voucherRepository = new VoucherRepository();
+const voucherService = new VoucherService(voucherRepository);
+const voucherController = new VoucherController(voucherService);
+
 // Define admin route groups
 const adminRouteGroups: RouteGroup[] = [
   {
@@ -456,6 +466,46 @@ const adminRouteGroups: RouteGroup[] = [
         method: 'delete',
         path: '/:id',
         handler: (req, res) => promotionController.delete(req, res),
+      },
+    ],
+  },
+  {
+    basePath: '/vouchers',
+    routes: [
+      {
+        method: 'get',
+        path: '/',
+        handler: (req, res) => voucherController.getAllVouchers(req, res),
+      },
+      {
+        method: 'get',
+        path: '/active',
+        handler: (req, res) => voucherController.getActiveVouchers(req, res),
+      },
+      {
+        method: 'get',
+        path: '/code/:code',
+        handler: (req, res) => voucherController.getVoucherByCode(req, res),
+      },
+      {
+        method: 'get',
+        path: '/:id',
+        handler: (req, res) => voucherController.getVoucherById(req, res),
+      },
+      {
+        method: 'post',
+        path: '/',
+        handler: (req, res) => voucherController.createVoucher(req, res),
+      },
+      {
+        method: 'put',
+        path: '/:id',
+        handler: (req, res) => voucherController.updateVoucher(req, res),
+      },
+      {
+        method: 'delete',
+        path: '/:id',
+        handler: (req, res) => voucherController.deleteVoucher(req, res),
       },
     ],
   },

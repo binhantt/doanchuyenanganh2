@@ -1,5 +1,5 @@
 import { IPackageRepository } from '../../domain/repositories/IPackageRepository';
-import { Package } from '../../domain/entities/Package';
+import { Package, PackageFeatures } from '../../domain/entities/Package';
 import { db } from '../database/connection';
 
 interface PackageRow {
@@ -8,8 +8,8 @@ interface PackageRow {
   slug: string;
   description: string;
   price: number;
-  features: string;
-  images?: string;
+  features: any;
+  images: any;
   is_popular: boolean;
   is_active: boolean;
   created_at: Date;
@@ -19,17 +19,51 @@ interface PackageRow {
 export class PackageRepository implements IPackageRepository {
   private readonly tableName = 'packages';
 
-  private mapRowToEntity(row: PackageRow): Package {
+  private async loadFeaturesAndImages(packageId: string): Promise<{ features: PackageFeatures; images: string[] }> {
+    // Load features
+    const featuresRows = await db('features')
+      .where({ entity_id: packageId, entity_type: 'package' })
+      .orderBy('display_order', 'asc');
+
+    const features: PackageFeatures = {
+      included: [],
+      excluded: [],
+      highlights: [],
+    };
+
+    for (const row of featuresRows) {
+      if (row.feature_type === 'included') {
+        features.included.push(row.feature_text);
+      } else if (row.feature_type === 'excluded') {
+        features.excluded!.push(row.feature_text);
+      } else if (row.feature_type === 'highlight') {
+        features.highlights!.push(row.feature_text);
+      }
+    }
+
+    // Load images
+    const imagesRows = await db('images')
+      .where({ entity_id: packageId, entity_type: 'package' })
+      .orderBy('display_order', 'asc');
+
+    const images = imagesRows.map((row) => row.url);
+
+    return { features, images };
+  }
+
+  private async mapRowToEntity(row: PackageRow): Promise<Package> {
+    const { features, images } = await this.loadFeaturesAndImages(row.id);
+
     return new Package(
       row.id,
       row.name,
       row.slug,
       row.description,
       Number(row.price),
-      JSON.parse(row.features),
+      features,
+      images,
       Boolean(row.is_popular),
       Boolean(row.is_active),
-      row.images ? JSON.parse(row.images) : [],
       new Date(row.created_at),
       new Date(row.updated_at)
     );
@@ -37,7 +71,7 @@ export class PackageRepository implements IPackageRepository {
 
   async findAll(): Promise<Package[]> {
     const rows = await db<PackageRow>(this.tableName).select('*');
-    return rows.map((row) => this.mapRowToEntity(row));
+    return Promise.all(rows.map((row) => this.mapRowToEntity(row)));
   }
 
   async findById(id: string): Promise<Package | null> {
@@ -55,57 +89,195 @@ export class PackageRepository implements IPackageRepository {
       .where({ is_active: true })
       .select('*')
       .orderBy('price', 'asc');
-    return rows.map((row) => this.mapRowToEntity(row));
+    return Promise.all(rows.map((row) => this.mapRowToEntity(row)));
   }
 
   async findPopular(): Promise<Package[]> {
     const rows = await db<PackageRow>(this.tableName)
       .where({ is_popular: true, is_active: true })
       .select('*');
-    return rows.map((row) => this.mapRowToEntity(row));
+    return Promise.all(rows.map((row) => this.mapRowToEntity(row)));
   }
 
   async create(pkg: Package): Promise<Package> {
-    await db(this.tableName).insert({
-      id: pkg.id,
-      name: pkg.name,
-      slug: pkg.slug,
-      description: pkg.description,
-      price: pkg.price,
-      features: JSON.stringify(pkg.features),
-      images: JSON.stringify(pkg.images || []),
-      is_popular: pkg.isPopular,
-      is_active: pkg.isActive,
-    });
+    const trx = await db.transaction();
 
-    return pkg;
+    try {
+      // Insert package
+      await trx(this.tableName).insert({
+        id: pkg.id,
+        name: pkg.name,
+        slug: pkg.slug,
+        description: pkg.description,
+        price: pkg.price,
+        is_popular: pkg.isPopular,
+        is_active: pkg.isActive,
+      });
+
+      // Insert features
+      let order = 0;
+      for (const feature of pkg.features.included) {
+        await trx('features').insert({
+          id: require('uuid').v4(),
+          entity_id: pkg.id,
+          entity_type: 'package',
+          feature_text: feature,
+          feature_type: 'included',
+          display_order: order++,
+        });
+      }
+
+      if (pkg.features.excluded) {
+        for (const feature of pkg.features.excluded) {
+          await trx('features').insert({
+            id: require('uuid').v4(),
+            entity_id: pkg.id,
+            entity_type: 'package',
+            feature_text: feature,
+            feature_type: 'excluded',
+            display_order: order++,
+          });
+        }
+      }
+
+      if (pkg.features.highlights) {
+        for (const feature of pkg.features.highlights) {
+          await trx('features').insert({
+            id: require('uuid').v4(),
+            entity_id: pkg.id,
+            entity_type: 'package',
+            feature_text: feature,
+            feature_type: 'highlight',
+            display_order: order++,
+          });
+        }
+      }
+
+      // Insert images
+      for (let i = 0; i < pkg.images.length; i++) {
+        await trx('images').insert({
+          id: require('uuid').v4(),
+          entity_id: pkg.id,
+          entity_type: 'package',
+          url: pkg.images[i],
+          display_order: i,
+          is_primary: i === 0,
+        });
+      }
+
+      await trx.commit();
+      return pkg;
+    } catch (error) {
+      await trx.rollback();
+      throw error;
+    }
   }
 
   async update(id: string, data: Partial<Package>): Promise<Package | null> {
-    const updateData: any = {};
+    const trx = await db.transaction();
 
-    if (data.name) updateData.name = data.name;
-    if (data.slug) updateData.slug = data.slug;
-    if (data.description) updateData.description = data.description;
-    if (data.price !== undefined) updateData.price = data.price;
-    if (data.features) updateData.features = JSON.stringify(data.features);
-    if (data.images) updateData.images = JSON.stringify(data.images);
-    if (data.isPopular !== undefined) updateData.is_popular = data.isPopular;
-    if (data.isActive !== undefined) updateData.is_active = data.isActive;
+    try {
+      const updateData: any = {};
 
-    updateData.updated_at = db.fn.now();
+      if (data.name) updateData.name = data.name;
+      if (data.slug) updateData.slug = data.slug;
+      if (data.description) updateData.description = data.description;
+      if (data.price !== undefined) updateData.price = data.price;
+      if (data.isPopular !== undefined) updateData.is_popular = data.isPopular;
+      if (data.isActive !== undefined) updateData.is_active = data.isActive;
 
-    const updated = await db(this.tableName).where({ id }).update(updateData);
+      updateData.updated_at = db.fn.now();
 
-    if (updated === 0) {
-      return null;
+      const updated = await trx(this.tableName).where({ id }).update(updateData);
+
+      if (updated === 0) {
+        await trx.rollback();
+        return null;
+      }
+
+      // Update features if provided
+      if (data.features) {
+        await trx('features').where({ entity_id: id, entity_type: 'package' }).del();
+
+        let order = 0;
+        for (const feature of data.features.included) {
+          await trx('features').insert({
+            id: require('uuid').v4(),
+            entity_id: id,
+            entity_type: 'package',
+            feature_text: feature,
+            feature_type: 'included',
+            display_order: order++,
+          });
+        }
+
+        if (data.features.excluded) {
+          for (const feature of data.features.excluded) {
+            await trx('features').insert({
+              id: require('uuid').v4(),
+              entity_id: id,
+              entity_type: 'package',
+              feature_text: feature,
+              feature_type: 'excluded',
+              display_order: order++,
+            });
+          }
+        }
+
+        if (data.features.highlights) {
+          for (const feature of data.features.highlights) {
+            await trx('features').insert({
+              id: require('uuid').v4(),
+              entity_id: id,
+              entity_type: 'package',
+              feature_text: feature,
+              feature_type: 'highlight',
+              display_order: order++,
+            });
+          }
+        }
+      }
+
+      // Update images if provided
+      if (data.images) {
+        await trx('images').where({ entity_id: id, entity_type: 'package' }).del();
+
+        for (let i = 0; i < data.images.length; i++) {
+          await trx('images').insert({
+            id: require('uuid').v4(),
+            entity_id: id,
+            entity_type: 'package',
+            url: data.images[i],
+            display_order: i,
+            is_primary: i === 0,
+          });
+        }
+      }
+
+      await trx.commit();
+      return this.findById(id);
+    } catch (error) {
+      await trx.rollback();
+      throw error;
     }
-
-    return this.findById(id);
   }
 
   async delete(id: string): Promise<boolean> {
-    const deleted = await db(this.tableName).where({ id }).del();
-    return deleted > 0;
+    const trx = await db.transaction();
+
+    try {
+      // Delete related features and images
+      await trx('features').where({ entity_id: id, entity_type: 'package' }).del();
+      await trx('images').where({ entity_id: id, entity_type: 'package' }).del();
+
+      // Delete package
+      const deleted = await trx(this.tableName).where({ id }).del();
+
+      await trx.commit();
+      return deleted > 0;
+    } catch (error) {
+      await trx.rollback();
+      throw error;
+    }
   }
 }
