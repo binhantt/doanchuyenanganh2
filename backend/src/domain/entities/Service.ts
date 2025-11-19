@@ -1,3 +1,9 @@
+export interface ServiceFeatures {
+  included: string[];
+  excluded: string[];
+  highlights: string[];
+}
+
 export class Service {
   constructor(
     public readonly id: string,
@@ -9,7 +15,9 @@ export class Service {
     public readonly basePrice: number,
     public readonly isActive: boolean = true,
     public readonly createdAt?: Date,
-    public readonly updatedAt?: Date
+    public readonly updatedAt?: Date,
+    public readonly features?: ServiceFeatures,
+    public readonly images?: string[]
   ) {}
 
   isAvailable(): boolean {

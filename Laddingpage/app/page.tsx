@@ -7,10 +7,10 @@ import { TestimonialsSection } from '@/src/features/testimonials';
 import { ProcessSteps } from '@/src/features/process';
 import { FAQSection } from '@/src/features/faq';
 import { BookingSection } from '@/src/features/booking';
-
+import TestimonialSubmitForm from '@/src/features/testimonials/components/TestimonialSubmitForm'
 export default function HomePage() {
   return (
-    <main className="min-h-screen py-5">
+    <main className="min-h-screen py-5 ">
 
       <HeroSection />
       <ServiceFeatures />
@@ -30,11 +30,13 @@ export default function HomePage() {
       {/* Testimonials - Đánh giá khách hàng */}
       <TestimonialsSection />
 
+
       {/* FAQ Section - Câu hỏi thường gặp */}
       <FAQSection />
 
       {/* Booking Section - Form đặt lịch */}
       <BookingSection />
+      <TestimonialSubmitForm/>
     </main>
   );
 }

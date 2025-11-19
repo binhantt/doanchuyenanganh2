@@ -46,23 +46,7 @@
       :error="errors.icon"
     />
     
-    <a-form-item label="Tính năng">
-      <div class="space-y-2">
-        <div v-for="(feature, index) in formData.features" :key="index" class="flex gap-2">
-          <a-input
-            v-model:value="formData.features[index]"
-            placeholder="Nhập tính năng"
-          />
-          <a-button danger @click="removeFeature(index)">
-            <delete-outlined />
-          </a-button>
-        </div>
-        <a-button type="dashed" block @click="addFeature">
-          <plus-outlined /> Thêm tính năng
-        </a-button>
-      </div>
-    </a-form-item>
-    
+
     <base-input
       v-model.number="formData.basePrice"
       label="Giá cơ bản"
@@ -71,6 +55,40 @@
       required
       :error="errors.basePrice"
     />
+    
+    <a-divider>Tính năng dịch vụ</a-divider>
+
+    <a-form-item label="Tính năng bao gồm">
+      <div v-for="(feature, index) in formData.features.included" :key="index" class="flex gap-2 mb-2">
+        <a-input v-model:value="formData.features.included[index]" placeholder="VD: Trang trí sân khấu" />
+        <a-button danger @click="removeIncluded(index)">Xóa</a-button>
+      </div>
+      <a-button type="dashed" @click="addIncluded" block>+ Thêm tính năng</a-button>
+    </a-form-item>
+
+    <a-form-item label="Tính năng không bao gồm">
+      <div v-for="(feature, index) in formData.features.excluded" :key="index" class="flex gap-2 mb-2">
+        <a-input v-model:value="formData.features.excluded![index]" placeholder="VD: Âm thanh ánh sáng" />
+        <a-button danger @click="removeExcluded(index)">Xóa</a-button>
+      </div>
+      <a-button type="dashed" @click="addExcluded" block>+ Thêm tính năng</a-button>
+    </a-form-item>
+
+    <a-form-item label="Điểm nổi bật">
+      <div v-for="(highlight, index) in formData.features.highlights" :key="index" class="flex gap-2 mb-2">
+        <a-input v-model:value="formData.features.highlights![index]" placeholder="VD: Thiết kế concept độc đáo" />
+        <a-button danger @click="removeHighlight(index)">Xóa</a-button>
+      </div>
+      <a-button type="dashed" @click="addHighlight" block>+ Thêm điểm nổi bật</a-button>
+    </a-form-item>
+
+    <a-form-item label="Hình ảnh (URLs)">
+      <div v-for="(image, index) in formData.images" :key="index" class="flex gap-2 mb-2">
+        <a-input v-model:value="formData.images[index]" placeholder="https://..." />
+        <a-button danger @click="removeImage(index)">Xóa</a-button>
+      </div>
+      <a-button type="dashed" @click="addImage" block>+ Thêm hình ảnh</a-button>
+    </a-form-item>
     
     <a-form-item label="Trạng thái">
       <a-switch v-model:checked="formData.isActive" />
@@ -92,7 +110,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons-vue'
+
 import BaseInput from '@/components/common/input/BaseInput.vue'
 import BaseTextarea from '@/components/common/input/BaseTextarea.vue'
 import SubmitButton from '@/components/common/button/SubmitButton.vue'
@@ -115,20 +133,35 @@ const formData = ref<ServiceFormData>({
   shortDescription: '',
   fullDescription: '',
   icon: '',
-  features: [''],
   basePrice: 0,
-  isActive: true
+  isActive: true,
+  features: {
+    included: [''],
+    excluded: [''],
+    highlights: ['']
+  },
+  images: ['']
 })
 
 const errors = ref<Record<string, string>>({})
 
-const addFeature = () => {
-  formData.value.features.push('')
-}
+const addIncluded = () => formData.value.features.included.push('')
+const removeIncluded = (index: number) => formData.value.features.included.splice(index, 1)
 
-const removeFeature = (index: number) => {
-  formData.value.features.splice(index, 1)
+const addExcluded = () => {
+  if (!formData.value.features.excluded) formData.value.features.excluded = []
+  formData.value.features.excluded.push('')
 }
+const removeExcluded = (index: number) => formData.value.features.excluded?.splice(index, 1)
+
+const addHighlight = () => {
+  if (!formData.value.features.highlights) formData.value.features.highlights = []
+  formData.value.features.highlights.push('')
+}
+const removeHighlight = (index: number) => formData.value.features.highlights?.splice(index, 1)
+
+const addImage = () => formData.value.images.push('')
+const removeImage = (index: number) => formData.value.images.splice(index, 1)
 
 watch(() => props.initialData, (newData) => {
   if (newData) {

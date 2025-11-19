@@ -8,28 +8,31 @@
     row-key="id"
   >
     <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'image'">
-        <a-image
-          v-if="record.image"
-          :src="record.image"
-          :width="60"
-          :height="60"
-          class="rounded object-cover"
-        />
-        <span v-else class="text-gray-400">Không có ảnh</span>
+      <template v-if="column.key === 'name'">
+        <span class="font-semibold">{{ record.name }}</span>
       </template>
-      
+
+      <template v-else-if="column.key === 'slug'">
+        <a-tag color="blue" class="font-mono">{{ record.slug }}</a-tag>
+      </template>
+
+      <template v-else-if="column.key === 'description'">
+        <div class="text-sm text-gray-600 truncate max-w-xs">
+          {{ record.description || '-' }}
+        </div>
+      </template>
+
       <template v-else-if="column.key === 'isActive'">
         <a-switch
           :checked="record.isActive"
           @change="$emit('toggle-status', record.id)"
         />
       </template>
-      
+
       <template v-else-if="column.key === 'createdAt'">
         {{ formatDate(record.createdAt) }}
       </template>
-      
+
       <template v-else-if="column.key === 'actions'">
         <a-space>
           <icon-button
@@ -70,10 +73,9 @@ const emit = defineEmits<{
 }>()
 
 const columns = [
-  { title: 'ID', dataIndex: 'id', key: 'id', width: 80 },
-  { title: 'Ảnh', key: 'image', width: 100 },
-  { title: 'Tên danh mục', dataIndex: 'name', key: 'name' },
-  { title: 'Mô tả', dataIndex: 'description', key: 'description', ellipsis: true },
+  { title: 'Tên danh mục', key: 'name', width: 200 },
+  { title: 'Slug', key: 'slug', width: 200 },
+  { title: 'Mô tả', key: 'description', width: 300 },
   { title: 'Trạng thái', key: 'isActive', width: 120 },
   { title: 'Ngày tạo', key: 'createdAt', width: 150 },
   { title: 'Thao tác', key: 'actions', width: 120, fixed: 'right' }
@@ -84,7 +86,7 @@ const paginationConfig = computed(() => ({
   pageSize: props.pagination.limit,
   total: props.pagination.total,
   showSizeChanger: true,
-  showTotal: (total: number) => `Tổng ${total} bản ghi`
+  showTotal: (total: number) => `Tổng ${total} danh mục`
 }))
 
 const handleTableChange = (pagination: any) => {

@@ -24,9 +24,23 @@ export class ProductRepository implements IProductRepository {
     return { features, images };
   }
 
-  async findAll(filters?: { category?: string; isActive?: boolean; isFeatured?: boolean }): Promise<Product[]> {
+  async findAll(filters?: { 
+    keyword?: string;
+    category?: string; 
+    isActive?: boolean; 
+    isFeatured?: boolean;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<Product[]> {
     let query = db(this.tableName);
 
+    if (filters?.keyword) {
+      query = query.where((builder) => {
+        builder
+          .where('name', 'like', `%${filters.keyword}%`)
+          .orWhere('description', 'like', `%${filters.keyword}%`);
+      });
+    }
     if (filters?.category) {
       query = query.where('category', filters.category);
     }
@@ -34,10 +48,24 @@ export class ProductRepository implements IProductRepository {
       query = query.where('is_active', filters.isActive);
     }
     if (filters?.isFeatured !== undefined) {
-      query = query.where('is_featured', filters.isFeatured);
+      query = query.where('is_popular', filters.isFeatured);
     }
 
-    const rows = await query.orderBy('created_at', 'desc');
+    // Map camelCase to snake_case for database columns
+    const columnMap: Record<string, string> = {
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      isActive: 'is_active',
+      isFeatured: 'is_popular',
+      stockQuantity: 'stock_quantity'
+    };
+    
+    const sortBy = filters?.sortBy || 'created_at';
+    const sortOrder = filters?.sortOrder || 'desc';
+    const dbColumn = columnMap[sortBy] || sortBy;
+    query = query.orderBy(dbColumn, sortOrder);
+
+    const rows = await query;
     return Promise.all(rows.map((row) => this.mapToEntity(row)));
   }
 
@@ -64,9 +92,8 @@ export class ProductRepository implements IProductRepository {
         description: product.description,
         price: product.price,
         category: product.category,
-        material: product.material,
-        stock_quantity: product.stockQuantity,
-        is_featured: product.isFeatured,
+        category_id: product.categoryId || null,
+        is_popular: product.isFeatured,
         is_active: product.isActive,
       });
 
@@ -117,9 +144,8 @@ export class ProductRepository implements IProductRepository {
       if (product.description !== undefined) data.description = product.description;
       if (product.price !== undefined) data.price = product.price;
       if (product.category !== undefined) data.category = product.category;
-      if (product.material !== undefined) data.material = product.material;
-      if (product.stockQuantity !== undefined) data.stock_quantity = product.stockQuantity;
-      if (product.isFeatured !== undefined) data.is_featured = product.isFeatured;
+      if (product.categoryId !== undefined) data.category_id = product.categoryId;
+      if (product.isFeatured !== undefined) data.is_popular = product.isFeatured;
       if (product.isActive !== undefined) data.is_active = product.isActive;
 
       const updated = await trx(this.tableName).where({ id }).update(data);
@@ -189,13 +215,9 @@ export class ProductRepository implements IProductRepository {
   }
 
   async updateStock(id: string, quantity: number): Promise<boolean> {
-    const updated = await db(this.tableName)
-      .where({ id })
-      .update({
-        stock_quantity: quantity,
-        updated_at: new Date(),
-      });
-    return updated > 0;
+    // Stock quantity column was removed in migration
+    // This method is kept for interface compatibility but does nothing
+    return true;
   }
 
   private async mapToEntity(row: any): Promise<Product> {
@@ -208,11 +230,12 @@ export class ProductRepository implements IProductRepository {
       row.description,
       parseFloat(row.price),
       row.category,
-      row.material,
+      row.category_id || null,
+      null, // material was removed
       features,
       images,
-      row.stock_quantity,
-      row.is_featured,
+      0, // stock_quantity was removed
+      row.is_popular || false, // renamed from is_featured
       row.is_active,
       row.created_at,
       row.updated_at

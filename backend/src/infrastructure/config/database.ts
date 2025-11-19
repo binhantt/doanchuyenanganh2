@@ -1,4 +1,4 @@
-import type { Knex } from 'knex';
+import knex, { Knex } from 'knex';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -25,4 +25,8 @@ export const databaseConfig: Knex.Config = {
   },
 };
 
+// Create and export db instance
+const db = knex(databaseConfig);
+
+export { db };
 export default databaseConfig;

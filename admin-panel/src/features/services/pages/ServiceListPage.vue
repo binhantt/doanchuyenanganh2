@@ -68,9 +68,14 @@ const formData = ref<ServiceFormData>({
   shortDescription: '',
   fullDescription: '',
   icon: '',
-  features: [''],
   basePrice: 0,
-  isActive: true
+  isActive: true,
+  features: {
+    included: [''],
+    excluded: [''],
+    highlights: ['']
+  },
+  images: ['']
 })
 
 const fetchServices = async () => {
@@ -99,9 +104,14 @@ const handleCreate = () => {
     shortDescription: '',
     fullDescription: '',
     icon: '',
-    features: [''],
     basePrice: 0,
-    isActive: true
+    isActive: true,
+    features: {
+      included: [''],
+      excluded: [''],
+      highlights: ['']
+    },
+    images: ['']
   }
   modalVisible.value = true
 }
@@ -115,9 +125,14 @@ const handleEdit = (service: Service) => {
     shortDescription: service.shortDescription,
     fullDescription: service.fullDescription,
     icon: service.icon,
-    features: service.features,
     basePrice: service.basePrice,
-    isActive: service.isActive
+    isActive: service.isActive,
+    features: service.features || {
+      included: [''],
+      excluded: [''],
+      highlights: ['']
+    },
+    images: service.images || ['']
   }
   modalVisible.value = true
 }

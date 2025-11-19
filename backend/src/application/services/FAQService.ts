@@ -6,8 +6,8 @@ import { v4 as uuidv4 } from 'uuid';
 export class FAQService implements IFAQService {
   constructor(private readonly faqRepository: IFAQRepository) {}
 
-  async getAllFAQs(): Promise<FAQ[]> {
-    return this.faqRepository.findAll();
+  async getAllFAQs(filters?: any): Promise<FAQ[]> {
+    return this.faqRepository.findAll(filters);
   }
 
   async getFAQById(id: string): Promise<FAQ | null> {
@@ -36,6 +36,7 @@ export class FAQService implements IFAQService {
     category: string;
     language: string;
     displayOrder: number;
+    isActive?: boolean;
   }): Promise<FAQ> {
     if (!data.question || !data.answer || !data.category || !data.language) {
       throw new Error('Missing required fields');
@@ -48,7 +49,7 @@ export class FAQService implements IFAQService {
       data.category,
       data.language,
       data.displayOrder,
-      true
+      data.isActive !== undefined ? data.isActive : true
     );
 
     return this.faqRepository.create(faq);

@@ -2,7 +2,7 @@
   <div>
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-3xl font-bold pink-gradient-text">Tổng quan</h1>
-      <a-button type="primary" class="pink-pulse">
+      <a-button type="primary" class="pink-pulse" @click="handleRefresh" :loading="loading">
         <reload-outlined /> Làm mới
       </a-button>
     </div>
@@ -73,6 +73,8 @@
             :columns="orderColumns"
             :data-source="recentOrders"
             :pagination="false"
+            :loading="loading"
+            :row-key="(record: any) => record.id"
           />
         </a-card>
       </a-col>
@@ -95,7 +97,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, h } from 'vue'
+import { ref, h, onMounted } from 'vue'
+import { message } from 'ant-design-vue'
 import {
   FileTextOutlined,
   DollarOutlined,
@@ -104,31 +107,83 @@ import {
   ReloadOutlined,
   ArrowUpOutlined
 } from '@ant-design/icons-vue'
+import { dashboardService, type DashboardStats, type RecentOrder } from '@/services/dashboard.service'
 
-const stats = ref({
-  totalOrders: 1234,
-  revenue: 125000000,
-  totalProducts: 89,
-  totalCustomers: 456
+const loading = ref(false)
+
+const stats = ref<DashboardStats>({
+  totalOrders: 0,
+  revenue: 0,
+  totalProducts: 0,
+  totalCustomers: 0
 })
 
 const orderColumns = [
   { title: 'Mã đơn', dataIndex: 'code', key: 'code' },
   { title: 'Khách hàng', dataIndex: 'customer', key: 'customer' },
-  { title: 'Tổng tiền', dataIndex: 'total', key: 'total' },
-  { title: 'Trạng thái', dataIndex: 'status', key: 'status' }
+  { 
+    title: 'Tổng tiền', 
+    dataIndex: 'total', 
+    key: 'total',
+    customRender: ({ text }: any) => formatCurrency(text)
+  },
+  { 
+    title: 'Trạng thái', 
+    dataIndex: 'status', 
+    key: 'status',
+    customRender: ({ text }: any) => getStatusLabel(text)
+  }
 ]
 
-const recentOrders = ref([
-  { key: '1', code: 'DH001', customer: 'Nguyễn Văn A', total: '5,000,000đ', status: 'Đã xác nhận' },
-  { key: '2', code: 'DH002', customer: 'Trần Thị B', total: '8,500,000đ', status: 'Đang xử lý' },
-  { key: '3', code: 'DH003', customer: 'Lê Văn C', total: '12,000,000đ', status: 'Hoàn thành' }
-])
+const recentOrders = ref<RecentOrder[]>([])
 
 const quickStats = ref([
-  { title: 'Đơn hàng chờ xử lý', value: '12' },
-  { title: 'Sản phẩm sắp hết', value: '5' },
-  { title: 'Đánh giá mới', value: '23' },
-  { title: 'Tin nhắn chưa đọc', value: '8' }
+  { title: 'Đơn hàng chờ xử lý', value: '0' },
+  { title: 'Sản phẩm sắp hết', value: '0' }
 ])
+
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND'
+  }).format(value)
+}
+
+const getStatusLabel = (status: string) => {
+  const labels: Record<string, string> = {
+    pending: 'Chờ xác nhận',
+    confirmed: 'Đã xác nhận',
+    paid: 'Đã thanh toán',
+    completed: 'Hoàn thành',
+    cancelled: 'Đã hủy'
+  }
+  return labels[status] || status
+}
+
+const fetchDashboardData = async () => {
+  loading.value = true
+  try {
+    const response = await dashboardService.getStats()
+    if (response.data) {
+      stats.value = response.data.stats
+      recentOrders.value = response.data.recentOrders
+      quickStats.value = [
+        { title: 'Đơn hàng chờ xử lý', value: response.data.quickStats.pendingOrders.toString() },
+        { title: 'Sản phẩm không hoạt động', value: response.data.quickStats.inactiveProducts.toString() }
+      ]
+    }
+  } catch (error: any) {
+    message.error(error.message || 'Không thể tải dữ liệu dashboard')
+  } finally {
+    loading.value = false
+  }
+}
+
+const handleRefresh = () => {
+  fetchDashboardData()
+}
+
+onMounted(() => {
+  fetchDashboardData()
+})
 </script>

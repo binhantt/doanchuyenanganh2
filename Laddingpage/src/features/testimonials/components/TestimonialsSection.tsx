@@ -12,13 +12,13 @@ import type { Testimonial as ApiTestimonial } from '../../api/types';
 // Map API testimonials to component testimonials
 const mapApiTestimonialToComponent = (apiTestimonial: ApiTestimonial): Testimonial => ({
   id: apiTestimonial.id,
-  name: apiTestimonial.customerName || 'Anonymous',
-  avatar: apiTestimonial.image,
+  name: apiTestimonial.clientName,
+  avatar: undefined,
   rating: apiTestimonial.rating,
-  feedback: apiTestimonial.comment,
-  role: undefined,
-  weddingDate: undefined,
-  location: undefined,
+  feedback: apiTestimonial.content,
+  role: apiTestimonial.clientRole,
+  weddingDate: apiTestimonial.eventDate,
+  location: apiTestimonial.location,
 });
 
 export default function TestimonialsSection({

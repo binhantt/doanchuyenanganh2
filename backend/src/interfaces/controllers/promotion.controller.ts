@@ -7,15 +7,16 @@ export class PromotionController {
 
   async list(req: Request, res: Response): Promise<Response> {
     try {
-      const onlyActive = req.query.active === 'true';
+      const { keyword, discountType, active, sortBy, sortOrder } = req.query;
 
-      let promotions;
+      const filters: any = {};
+      if (keyword) filters.keyword = keyword as string;
+      if (discountType) filters.discountType = discountType as string;
+      if (active !== undefined) filters.isActive = active === 'true';
+      if (sortBy) filters.sortBy = sortBy as string;
+      if (sortOrder) filters.sortOrder = sortOrder as 'asc' | 'desc';
 
-      if (onlyActive) {
-        promotions = await this.promotionService.getActivePromotions();
-      } else {
-        promotions = await this.promotionService.getAllPromotions();
-      }
+      const promotions = await this.promotionService.getAllPromotions(filters);
 
       return res.status(200).json({
         success: true,

@@ -6,8 +6,13 @@ import { v4 as uuidv4 } from 'uuid';
 export class OrderService implements IOrderService {
   constructor(private readonly orderRepository: IOrderRepository) {}
 
-  async getAllOrders(): Promise<Order[]> {
-    return this.orderRepository.findAll();
+  async getAllOrders(filters?: {
+    keyword?: string;
+    status?: string;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<Order[]> {
+    return this.orderRepository.findAll(filters);
   }
 
   async getOrderById(id: string): Promise<Order | null> {

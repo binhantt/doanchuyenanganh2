@@ -14,6 +14,13 @@ export const validateBookingForm = (
     errors.name = 'Họ tên không được quá 100 ký tự';
   }
 
+  // Email validation
+  if (!data.email.trim()) {
+    errors.email = 'Vui lòng nhập email';
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+    errors.email = 'Email không hợp lệ';
+  }
+
   // Phone validation
   if (!data.phone.trim()) {
     errors.phone = 'Vui lòng nhập số điện thoại';

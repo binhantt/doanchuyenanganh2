@@ -1,7 +1,13 @@
 import { Package } from '../entities/Package';
 
 export interface IPackageRepository {
-  findAll(): Promise<Package[]>;
+  findAll(filters?: {
+    keyword?: string;
+    isActive?: boolean;
+    isPopular?: boolean;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<Package[]>;
   findById(id: string): Promise<Package | null>;
   findBySlug(slug: string): Promise<Package | null>;
   findActive(): Promise<Package[]>;

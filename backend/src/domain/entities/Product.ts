@@ -1,4 +1,4 @@
-export class Product {
+ export class Product {
   constructor(
     public readonly id: string,
     public readonly name: string,
@@ -6,6 +6,7 @@ export class Product {
     public readonly description: string,
     public readonly price: number,
     public readonly category: string,
+    public readonly categoryId: number | null,
     public readonly material: string | null,
     public readonly features: string[],
     public readonly images: string[],

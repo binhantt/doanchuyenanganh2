@@ -1,3 +1,9 @@
+export interface ServiceFeatures {
+  included: string[]
+  excluded?: string[]
+  highlights?: string[]
+}
+
 export interface Service {
   id: string
   name: string
@@ -5,9 +11,10 @@ export interface Service {
   shortDescription: string
   fullDescription: string
   icon: string
-  features: string[]
   basePrice: number
   isActive: boolean
+  features: ServiceFeatures
+  images: string[]
   createdAt: string
   updatedAt: string
 }
@@ -18,9 +25,10 @@ export interface ServiceFormData {
   shortDescription: string
   fullDescription: string
   icon: string
-  features: string[]
   basePrice: number
   isActive: boolean
+  features: ServiceFeatures
+  images: string[]
 }
 
 export interface ServiceFilter {

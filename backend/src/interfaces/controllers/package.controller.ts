@@ -7,16 +7,25 @@ export class PackageController {
 
   async list(req: Request, res: Response): Promise<Response> {
     try {
-      const onlyActive = req.query.active === 'true';
-      const popular = req.query.popular === 'true';
+      const { keyword, active, popular, sortBy, sortOrder } = req.query;
 
-      let packages;
-
-      if (popular) {
-        packages = await this.packageService.getPopularPackages();
-      } else {
-        packages = await this.packageService.getAllPackages(onlyActive);
+      // Handle special case for popular packages
+      if (popular === 'true') {
+        const packages = await this.packageService.getPopularPackages();
+        return res.status(200).json({
+          success: true,
+          data: packages,
+          count: packages.length,
+        });
       }
+
+      const filters: any = {};
+      if (keyword) filters.keyword = keyword as string;
+      if (active !== undefined) filters.isActive = active === 'true';
+      if (sortBy) filters.sortBy = sortBy as string;
+      if (sortOrder) filters.sortOrder = sortOrder as 'asc' | 'desc';
+
+      const packages = await this.packageService.getAllPackages(filters);
 
       return res.status(200).json({
         success: true,

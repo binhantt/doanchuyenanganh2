@@ -1,31 +1,17 @@
 // Parse CORS origins from environment variable
-const parseCorsOrigins = (): string[] => {
-  const corsEnv = process.env.CORS_ORIGIN;
-  
-  if (!corsEnv) {
-    return [
-      'http://localhost:3000',
-      'http://127.0.0.1:3000',
-      'http://192.168.1.2:3000',
-      'http://192.168.1.3:3000',
-      'http://192.168.1.4:3000',
-      'http://192.168.1.5:3000',
-    ];
-  }
-
-  // If it's a comma-separated string, split it
-  if (typeof corsEnv === 'string' && corsEnv.includes(',')) {
-    return corsEnv.split(',').map(origin => origin.trim());
-  }
-
-  // Otherwise return as array
-  return [corsEnv];
-};
 
 export const APP_CONFIG = {
   PORT: process.env.PORT || 4000,
   NODE_ENV: process.env.NODE_ENV || 'development',
-  CORS_ORIGIN: parseCorsOrigins(),
+  CORS_ORIGIN: [  'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      'http://localhost:3001',  // Admin panel
+      'http://127.0.0.1:3001',  // Admin panel
+      'http://192.168.1.2:3000',
+      'http://192.168.1.3:3000',
+      'http://192.168.1.4:3000',
+      'http://192.168.1.5:3000',
+    ],
 };
 
 export const DB_CONFIG = {

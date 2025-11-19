@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { Quote } from 'lucide-react';
 import StarRating from './StarRating';
@@ -10,6 +11,14 @@ export default function TestimonialCard({
   variant = 'default',
 }: TestimonialCardProps) {
   const isCompact = variant === 'compact';
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  // Giới hạn độ dài feedback
+  const MAX_LENGTH = 200;
+  const shouldTruncate = testimonial.feedback.length > MAX_LENGTH;
+  const displayFeedback = !isExpanded && shouldTruncate 
+    ? testimonial.feedback.slice(0, MAX_LENGTH) + '...'
+    : testimonial.feedback;
 
   return (
     <div
@@ -31,13 +40,23 @@ export default function TestimonialCard({
         <StarRating rating={testimonial.rating} size={isCompact ? 'sm' : 'md'} />
 
         {/* Feedback Text */}
-        <p
-          className={`text-gray-700 leading-relaxed ${
-            isCompact ? 'text-sm line-clamp-4' : 'text-base'
-          }`}
-        >
-          "{testimonial.feedback}"
-        </p>
+        <div>
+          <p
+            className={`text-gray-700 leading-relaxed ${
+              isCompact ? 'text-sm line-clamp-4' : 'text-base'
+            }`}
+          >
+            "{displayFeedback}"
+          </p>
+          {shouldTruncate && !isCompact && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="mt-2 text-sm text-pink-600 hover:text-pink-700 font-medium transition-colors"
+            >
+              {isExpanded ? 'Thu gọn' : 'Xem thêm'}
+            </button>
+          )}
+        </div>
 
         {/* Divider */}
         <div className="w-12 h-1 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full" />

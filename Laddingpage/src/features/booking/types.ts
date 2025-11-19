@@ -1,5 +1,6 @@
 export interface BookingFormData {
   name: string;
+  email: string;
   phone: string;
   eventDate: string;
   package: string;
@@ -8,6 +9,7 @@ export interface BookingFormData {
 
 export interface BookingFormErrors {
   name?: string;
+  email?: string;
   phone?: string;
   eventDate?: string;
   package?: string;

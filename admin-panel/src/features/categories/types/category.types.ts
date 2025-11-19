@@ -1,8 +1,8 @@
 export interface Category {
   id: number
   name: string
-  description?: string
-  image?: string
+  slug: string
+  description: string | null
   isActive: boolean
   createdAt: string
   updatedAt: string
@@ -10,8 +10,8 @@ export interface Category {
 
 export interface CategoryFormData {
   name: string
+  slug: string
   description?: string
-  image?: string
   isActive: boolean
 }
 

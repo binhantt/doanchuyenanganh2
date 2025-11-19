@@ -92,14 +92,19 @@ const loading = ref(false)
 const handleLogin = async () => {
   loading.value = true
   try {
-    // TODO: Call API login
-    // const response = await loginAPI(formData.value)
-    // localStorage.setItem('token', response.token)
+    const { useAuthStore } = await import('@/stores/auth')
+    const authStore = useAuthStore()
     
-    // Mock login
-    localStorage.setItem('token', 'mock-token')
-    message.success('Đăng nhập thành công!')
-    router.push('/')
+    const success = await authStore.login(formData.value.email, formData.value.password)
+    
+    if (success) {
+      message.success('Đăng nhập thành công!')
+      setTimeout(() => {
+        router.push('/')
+      }, 500)
+    } else {
+      message.error('Email hoặc mật khẩu không đúng!')
+    }
   } catch (error) {
     message.error('Đăng nhập thất bại!')
   } finally {

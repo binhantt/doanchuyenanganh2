@@ -4,6 +4,7 @@ export interface CreateProductDTO {
   description: string;
   price: number;
   category: string;
+  categoryId?: number;
   material: string;
   features: string[];
   images: string[];
@@ -18,6 +19,7 @@ export interface UpdateProductDTO {
   description?: string;
   price?: number;
   category?: string;
+  categoryId?: number;
   material?: string;
   features?: string[];
   images?: string[];
@@ -33,6 +35,7 @@ export interface ProductResponseDTO {
   description: string;
   price: number;
   category: string;
+  categoryId: number | null;
   material: string;
   features: string[];
   images: string[];

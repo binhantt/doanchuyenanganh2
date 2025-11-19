@@ -34,8 +34,42 @@ export class FAQRepository implements IFAQRepository {
     );
   }
 
-  async findAll(): Promise<FAQ[]> {
-    const rows = await db<FAQRow>(this.tableName).select('*').orderBy('display_order', 'asc');
+  async findAll(filters?: {
+    keyword?: string;
+    category?: string;
+    isActive?: boolean;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<FAQ[]> {
+    let query = db<FAQRow>(this.tableName);
+
+    if (filters?.keyword) {
+      query = query.where((builder) => {
+        builder
+          .where('question', 'like', `%${filters.keyword}%`)
+          .orWhere('answer', 'like', `%${filters.keyword}%`);
+      });
+    }
+    if (filters?.category) {
+      query = query.where('category', filters.category);
+    }
+    if (filters?.isActive !== undefined) {
+      query = query.where('is_active', filters.isActive);
+    }
+
+    // Map camelCase to snake_case for database columns
+    const columnMap: Record<string, string> = {
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      displayOrder: 'display_order',
+      isActive: 'is_active'
+    };
+
+    const sortBy = filters?.sortBy || 'display_order';
+    const sortOrder = filters?.sortOrder || 'asc';
+    const dbColumn = columnMap[sortBy] || sortBy;
+
+    const rows = await query.orderBy(dbColumn, sortOrder).select('*');
     return rows.map((row) => this.mapRowToEntity(row));
   }
 

@@ -1,7 +1,7 @@
 import { Testimonial } from '../entities/Testimonial';
 
 export interface ITestimonialRepository {
-  findAll(): Promise<Testimonial[]>;
+  findAll(filters?: any): Promise<Testimonial[]>;
   findById(id: string): Promise<Testimonial | null>;
   findActive(): Promise<Testimonial[]>;
   findByLanguage(language: string): Promise<Testimonial[]>;

@@ -113,12 +113,13 @@ export interface Gallery {
 // Testimonial types
 export interface Testimonial {
   id: string;
-  customerName: string;
+  clientName: string;
+  clientRole: string;
+  content: string;
   rating: number;
-  comment: string;
-  image?: string;
-  serviceId?: string;
-  isApproved: boolean;
+  eventDate: string;
+  location: string;
+  language: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

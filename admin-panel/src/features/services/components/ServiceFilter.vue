@@ -1,57 +1,63 @@
 <template>
-  <a-card class="mb-4">
-    <a-row :gutter="16">
-      <a-col :xs="24" :sm="12" :md="8">
+  <pink-card class="mb-6">
+    <a-form layout="inline" class="flex flex-wrap gap-4">
+      <a-form-item label="Tìm kiếm">
         <a-input
           v-model:value="filters.keyword"
-          placeholder="Tìm kiếm theo tên hoặc slug..."
-          allow-clear
-          @change="handleFilterChange"
+          placeholder="Tìm theo tên, slug, mô tả..."
+          style="width: 300px"
+          @pressEnter="handleFilterChange"
         >
           <template #prefix>
             <search-outlined />
           </template>
         </a-input>
-      </a-col>
-      
-      <a-col :xs="24" :sm="12" :md="6">
+      </a-form-item>
+
+      <a-form-item label="Trạng thái">
         <a-select
           v-model:value="filters.isActive"
-          placeholder="Trạng thái"
-          allow-clear
+          placeholder="Tất cả"
+          style="width: 150px"
           @change="handleFilterChange"
-          class="w-full"
+          allowClear
         >
           <a-select-option :value="true">Hoạt động</a-select-option>
           <a-select-option :value="false">Không hoạt động</a-select-option>
         </a-select>
-      </a-col>
-      
-      <a-col :xs="24" :sm="12" :md="6">
+      </a-form-item>
+
+      <a-form-item label="Sắp xếp">
         <a-select
           v-model:value="filters.sortBy"
-          placeholder="Sắp xếp theo"
+          style="width: 150px"
           @change="handleFilterChange"
-          class="w-full"
         >
           <a-select-option value="name">Tên</a-select-option>
           <a-select-option value="basePrice">Giá</a-select-option>
           <a-select-option value="createdAt">Ngày tạo</a-select-option>
         </a-select>
-      </a-col>
-      
-      <a-col :xs="24" :sm="12" :md="4">
-        <a-button type="primary" @click="handleReset" block>
-          <reload-outlined /> Reset
+      </a-form-item>
+
+      <a-form-item>
+        <a-button type="primary" @click="handleFilterChange">
+          <search-outlined /> Tìm kiếm
         </a-button>
-      </a-col>
-    </a-row>
-  </a-card>
+      </a-form-item>
+
+      <a-form-item>
+        <a-button @click="handleReset">
+          <reload-outlined /> Đặt lại
+        </a-button>
+      </a-form-item>
+    </a-form>
+  </pink-card>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { SearchOutlined, ReloadOutlined } from '@ant-design/icons-vue'
+import PinkCard from '@/components/common/card/PinkCard.vue'
 import type { ServiceFilter } from '../types/service.types'
 
 const emit = defineEmits<{

@@ -14,7 +14,7 @@ export default function BookingSection({
   return (
     <section
       id="booking"
-      className=" px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white via-pink-50/30 to-white"
+      className=" px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white via-pink-50/30 to-white py-4"
     >
       <div className="container mx-auto max-w-6xl">
         {/* Section Header */}

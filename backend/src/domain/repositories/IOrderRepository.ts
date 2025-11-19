@@ -1,7 +1,12 @@
 import { Order } from '../entities/Order';
 
 export interface IOrderRepository {
-  findAll(): Promise<Order[]>;
+  findAll(filters?: {
+    keyword?: string;
+    status?: string;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<Order[]>;
   findById(id: string): Promise<Order | null>;
   findByEmail(email: string): Promise<Order[]>;
   findByStatus(status: string): Promise<Order[]>;

@@ -6,13 +6,16 @@ export class GalleryController {
 
   getAllGalleries = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { category, relatedId, relatedType, isActive } = req.query;
+      const { keyword, category, relatedId, relatedType, isActive, sortBy, sortOrder } = req.query;
 
       const filters: any = {};
+      if (keyword) filters.keyword = keyword as string;
       if (category) filters.category = category as string;
       if (relatedId) filters.relatedId = relatedId as string;
       if (relatedType) filters.relatedType = relatedType as string;
       if (isActive !== undefined) filters.isActive = isActive === 'true';
+      if (sortBy) filters.sortBy = sortBy as string;
+      if (sortOrder) filters.sortOrder = sortOrder as 'asc' | 'desc';
 
       const galleries = await this.galleryService.getAllGalleries(filters);
       res.json({

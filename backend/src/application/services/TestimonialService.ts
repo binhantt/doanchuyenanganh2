@@ -6,8 +6,8 @@ import { v4 as uuidv4 } from 'uuid';
 export class TestimonialService implements ITestimonialService {
   constructor(private readonly testimonialRepository: ITestimonialRepository) {}
 
-  async getAllTestimonials(): Promise<Testimonial[]> {
-    return this.testimonialRepository.findAll();
+  async getAllTestimonials(filters?: any): Promise<Testimonial[]> {
+    return this.testimonialRepository.findAll(filters);
   }
 
   async getTestimonialById(id: string): Promise<Testimonial | null> {
@@ -30,6 +30,7 @@ export class TestimonialService implements ITestimonialService {
     eventDate: Date;
     location: string;
     language: string;
+    isActive?: boolean;
   }): Promise<Testimonial> {
     if (data.rating < 1 || data.rating > 5) {
       throw new Error('Rating must be between 1 and 5');
@@ -44,7 +45,7 @@ export class TestimonialService implements ITestimonialService {
       data.eventDate,
       data.location,
       data.language,
-      true
+      data.isActive !== undefined ? data.isActive : true
     );
 
     return this.testimonialRepository.create(testimonial);

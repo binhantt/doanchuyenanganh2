@@ -38,8 +38,44 @@ export class TestimonialRepository implements ITestimonialRepository {
     );
   }
 
-  async findAll(): Promise<Testimonial[]> {
-    const rows = await db<TestimonialRow>(this.tableName).select('*').orderBy('event_date', 'desc');
+  async findAll(filters?: {
+    keyword?: string;
+    rating?: number;
+    isActive?: boolean;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<Testimonial[]> {
+    let query = db<TestimonialRow>(this.tableName);
+
+    if (filters?.keyword) {
+      query = query.where((builder) => {
+        builder
+          .where('client_name', 'like', `%${filters.keyword}%`)
+          .orWhere('content', 'like', `%${filters.keyword}%`)
+          .orWhere('location', 'like', `%${filters.keyword}%`);
+      });
+    }
+    if (filters?.rating) {
+      query = query.where('rating', filters.rating);
+    }
+    if (filters?.isActive !== undefined) {
+      query = query.where('is_active', filters.isActive);
+    }
+
+    // Map camelCase to snake_case for database columns
+    const columnMap: Record<string, string> = {
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      eventDate: 'event_date',
+      clientName: 'client_name',
+      isActive: 'is_active'
+    };
+
+    const sortBy = filters?.sortBy || 'event_date';
+    const sortOrder = filters?.sortOrder || 'desc';
+    const dbColumn = columnMap[sortBy] || sortBy;
+
+    const rows = await query.orderBy(dbColumn, sortOrder).select('*');
     return rows.map((row) => this.mapRowToEntity(row));
   }
 

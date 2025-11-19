@@ -8,7 +8,18 @@
     row-key="id"
   >
     <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'icon'">
+      <template v-if="column.key === 'images'">
+        <a-image
+          v-if="record.images && record.images.length > 0"
+          :src="record.images[0]"
+          :width="60"
+          :height="60"
+          class="rounded object-cover"
+        />
+        <span v-else class="text-gray-400">Không có ảnh</span>
+      </template>
+      
+      <template v-else-if="column.key === 'icon'">
         <a-tag color="pink">{{ record.icon }}</a-tag>
       </template>
       
@@ -18,13 +29,10 @@
         </span>
       </template>
       
-      <template v-else-if="column.key === 'features'">
-        <a-tag v-for="(feature, index) in record.features.slice(0, 2)" :key="index" color="pink">
-          {{ feature }}
-        </a-tag>
-        <a-tag v-if="record.features.length > 2" color="default">
-          +{{ record.features.length - 2 }}
-        </a-tag>
+      <template v-else-if="column.key === 'description'">
+        <div class="text-sm text-gray-600 truncate max-w-xs">
+          {{ record.shortDescription }}
+        </div>
       </template>
       
       <template v-else-if="column.key === 'isActive'">
@@ -78,13 +86,12 @@ const emit = defineEmits<{
 }>()
 
 const columns = [
+  { title: 'Ảnh', key: 'images', width: 100 },
   { title: 'Tên dịch vụ', dataIndex: 'name', key: 'name', width: 200 },
-  { title: 'Slug', dataIndex: 'slug', key: 'slug', width: 150 },
   { title: 'Icon', key: 'icon', width: 100 },
   { title: 'Giá cơ bản', key: 'basePrice', width: 150 },
-  { title: 'Tính năng', key: 'features', width: 200 },
+  { title: 'Mô tả', key: 'description', width: 200 },
   { title: 'Trạng thái', key: 'isActive', width: 120 },
-  { title: 'Ngày tạo', key: 'createdAt', width: 150 },
   { title: 'Thao tác', key: 'actions', width: 120, fixed: 'right' }
 ]
 

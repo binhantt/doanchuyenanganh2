@@ -1,7 +1,12 @@
 import { Order, OrderItem } from '../../domain/entities/Order';
 
 export interface IOrderService {
-  getAllOrders(): Promise<Order[]>;
+  getAllOrders(filters?: {
+    keyword?: string;
+    status?: string;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<Order[]>;
   getOrderById(id: string): Promise<Order | null>;
   getOrdersByEmail(email: string): Promise<Order[]>;
   getOrdersByStatus(status: string): Promise<Order[]>;

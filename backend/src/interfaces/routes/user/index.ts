@@ -6,9 +6,25 @@ import { ServiceRepository } from '../../../infrastructure/repositories/ServiceR
 
 const router = Router();
 
+// Gallery DI (needed first for other services)
+import { GalleryController } from '../../controllers/gallery.controller';
+import { GalleryService } from '../../../application/services/GalleryService';
+import { GalleryRepository } from '../../../infrastructure/repositories/GalleryRepository';
+
+const galleryRepository = new GalleryRepository();
+const galleryService = new GalleryService(galleryRepository);
+const galleryController = new GalleryController(galleryService);
+
+// Image and Feature DI (needed for services)
+import { ImageRepository } from '../../../infrastructure/repositories/ImageRepository';
+import { FeatureRepository } from '../../../infrastructure/repositories/FeatureRepository';
+
+const imageRepository = new ImageRepository();
+const featureRepository = new FeatureRepository();
+
 // Dependency injection
 const serviceRepository = new ServiceRepository();
-const serviceService = new ServiceService(serviceRepository);
+const serviceService = new ServiceService(serviceRepository, imageRepository, featureRepository, galleryRepository);
 const serviceController = new ServiceController(serviceService);
 
 // Decoration DI
@@ -37,15 +53,6 @@ import { ProductRepository } from '../../../infrastructure/repositories/ProductR
 const productRepository = new ProductRepository();
 const productService = new ProductService(productRepository);
 const productController = new ProductController(productService);
-
-// Gallery DI
-import { GalleryController } from '../../controllers/gallery.controller';
-import { GalleryService } from '../../../application/services/GalleryService';
-import { GalleryRepository } from '../../../infrastructure/repositories/GalleryRepository';
-
-const galleryRepository = new GalleryRepository();
-const galleryService = new GalleryService(galleryRepository);
-const galleryController = new GalleryController(galleryService);
 
 // Testimonial DI
 import { TestimonialController } from '../../controllers/testimonial.controller';
@@ -118,6 +125,11 @@ const userRouteGroups: RouteGroup[] = [
         method: 'get',
         path: '/slug/:slug',
         handler: (req, res) => serviceController.getBySlug(req, res),
+      },
+      {
+        method: 'get',
+        path: '/:id/images',
+        handler: (req, res) => serviceController.getImages(req, res),
       },
       {
         method: 'get',
@@ -266,6 +278,11 @@ const userRouteGroups: RouteGroup[] = [
         method: 'get',
         path: '/:id',
         handler: (req, res) => testimonialController.getTestimonialById(req, res),
+      },
+      {
+        method: 'post',
+        path: '/submit',
+        handler: (req, res) => testimonialController.submitTestimonial(req, res),
       },
     ],
   },

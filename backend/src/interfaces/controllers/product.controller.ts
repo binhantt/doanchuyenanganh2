@@ -6,12 +6,15 @@ export class ProductController {
 
   getAllProducts = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { category, isActive, isFeatured } = req.query;
+      const { keyword, category, isActive, isFeatured, sortBy, sortOrder } = req.query;
       
       const filters: any = {};
+      if (keyword) filters.keyword = keyword as string;
       if (category) filters.category = category as string;
       if (isActive !== undefined) filters.isActive = isActive === 'true';
       if (isFeatured !== undefined) filters.isFeatured = isFeatured === 'true';
+      if (sortBy) filters.sortBy = sortBy as string;
+      if (sortOrder) filters.sortOrder = sortOrder as 'asc' | 'desc';
 
       const products = await this.productService.getAllProducts(filters);
       res.json({
@@ -110,23 +113,46 @@ export class ProductController {
     }
   };
 
+  getStock = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      // Stock management was removed - return a message
+      res.json({
+        success: true,
+        data: {
+          productId: id,
+          stockQuantity: null,
+          message: 'Stock management is not available for this product type',
+        },
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error instanceof Error ? error.message : 'Internal server error',
+      });
+    }
+  };
+
   updateStock = async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      const { quantity } = req.body;
+      const { stockQuantity, quantity } = req.body;
+      
+      // Accept either stockQuantity or quantity for backwards compatibility
+      const stockValue = stockQuantity !== undefined ? stockQuantity : quantity;
 
-      if (quantity === undefined || typeof quantity !== 'number') {
+      if (stockValue === undefined || typeof stockValue !== 'number') {
         res.status(400).json({
           success: false,
-          message: 'Quantity is required and must be a number',
+          message: 'Stock quantity is required and must be a number',
         });
         return;
       }
 
-      await this.productService.updateStock(id, quantity);
+      await this.productService.updateStock(id, stockValue);
       res.json({
         success: true,
-        message: 'Stock updated successfully',
+        message: 'Stock updated successfully (Note: Stock management is deprecated for this product type)',
       });
     } catch (error) {
       const statusCode = error instanceof Error && error.message === 'Product not found' ? 404 : 400;

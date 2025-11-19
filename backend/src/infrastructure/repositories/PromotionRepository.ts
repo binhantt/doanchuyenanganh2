@@ -43,8 +43,46 @@ export class PromotionRepository implements IPromotionRepository {
     );
   }
 
-  async findAll(): Promise<Promotion[]> {
-    const rows = await db<PromotionRow>(this.tableName).select('*');
+  async findAll(filters?: {
+    keyword?: string;
+    discountType?: string;
+    isActive?: boolean;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<Promotion[]> {
+    let query = db<PromotionRow>(this.tableName);
+
+    if (filters?.keyword) {
+      query = query.where((builder) => {
+        builder
+          .where('code', 'like', `%${filters.keyword}%`)
+          .orWhere('title', 'like', `%${filters.keyword}%`)
+          .orWhere('description', 'like', `%${filters.keyword}%`);
+      });
+    }
+    if (filters?.discountType) {
+      query = query.where('discount_type', filters.discountType);
+    }
+    if (filters?.isActive !== undefined) {
+      query = query.where('is_active', filters.isActive);
+    }
+
+    // Map camelCase to snake_case for database columns
+    const columnMap: Record<string, string> = {
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      startDate: 'start_date',
+      endDate: 'end_date',
+      discountType: 'discount_type',
+      discountValue: 'discount_value',
+      isActive: 'is_active'
+    };
+
+    const sortBy = filters?.sortBy || 'created_at';
+    const sortOrder = filters?.sortOrder || 'desc';
+    const dbColumn = columnMap[sortBy] || sortBy;
+
+    const rows = await query.orderBy(dbColumn, sortOrder).select('*');
     return rows.map((row) => this.mapRowToEntity(row));
   }
 

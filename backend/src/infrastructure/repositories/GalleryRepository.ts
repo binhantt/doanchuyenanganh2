@@ -7,13 +7,23 @@ export class GalleryRepository implements IGalleryRepository {
   private readonly tableName = 'galleries';
 
   async findAll(filters?: {
+    keyword?: string;
     category?: string;
     relatedId?: string;
     relatedType?: string;
     isActive?: boolean;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
   }): Promise<Gallery[]> {
     let query = db(this.tableName);
 
+    if (filters?.keyword) {
+      query = query.where((builder) => {
+        builder
+          .where('title', 'like', `%${filters.keyword}%`)
+          .orWhere('alt_text', 'like', `%${filters.keyword}%`);
+      });
+    }
     if (filters?.category) {
       query = query.where('category', filters.category);
     }
@@ -27,7 +37,20 @@ export class GalleryRepository implements IGalleryRepository {
       query = query.where('is_active', filters.isActive);
     }
 
-    const rows = await query.orderBy('display_order', 'asc').orderBy('created_at', 'desc');
+    // Map camelCase to snake_case for database columns
+    const columnMap: Record<string, string> = {
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      displayOrder: 'display_order',
+      isActive: 'is_active',
+      isPrimary: 'is_primary'
+    };
+
+    const sortBy = filters?.sortBy || 'display_order';
+    const sortOrder = filters?.sortOrder || 'asc';
+    const dbColumn = columnMap[sortBy] || sortBy;
+    
+    const rows = await query.orderBy(dbColumn, sortOrder).orderBy('created_at', 'desc');
     return rows.map(this.mapToEntity);
   }
 

@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import * as Label from '@radix-ui/react-label';
-import { Calendar, User, Phone, Package, FileText, Send, CheckCircle } from 'lucide-react';
+import { Calendar, User, Phone, Mail, Package, FileText, Send, CheckCircle } from 'lucide-react';
 import { BookingFormData, BookingFormErrors, PackageOption } from '../types';
 import { validateBookingForm, formatPrice } from '../utils/validation';
+import { useConsultation } from '../../api/hooks/useConsultation';
 
 interface BookingFormProps {
   packages: PackageOption[];
@@ -12,8 +13,11 @@ interface BookingFormProps {
 }
 
 export default function BookingForm({ packages, onSubmit }: BookingFormProps) {
+  const { submitConsultation, loading: apiLoading, error: apiError } = useConsultation();
+  
   const [formData, setFormData] = useState<BookingFormData>({
     name: '',
+    email: '',
     phone: '',
     eventDate: '',
     package: '',
@@ -53,6 +57,7 @@ export default function BookingForm({ packages, onSubmit }: BookingFormProps) {
     // Mark all fields as touched
     setTouched({
       name: true,
+      email: true,
       phone: true,
       eventDate: true,
       package: true,
@@ -71,12 +76,28 @@ export default function BookingForm({ packages, onSubmit }: BookingFormProps) {
     setIsSubmitting(true);
 
     try {
+      // Get selected package info
+      const selectedPkg = packages.find(pkg => pkg.id === formData.package);
+      
+      // Prepare data for API
+      const consultationData = {
+        clientName: formData.name,
+        clientEmail: formData.email,
+        clientPhone: formData.phone,
+        weddingDate: formData.eventDate,
+        guestCount: 100, // Default guest count
+        venue: 'Chưa xác định', // Default venue
+        serviceType: selectedPkg?.name || formData.package || 'Tư vấn chung',
+        budget: selectedPkg?.price?.toString() || 'Chưa xác định',
+        notes: formData.notes || 'Không có ghi chú',
+      };
+
+      // Call API
+      await submitConsultation(consultationData);
+
+      // Call custom onSubmit if provided
       if (onSubmit) {
         await onSubmit(formData);
-      } else {
-        // Default behavior: log to console
-        console.log('Booking form submitted:', formData);
-        await new Promise((resolve) => setTimeout(resolve, 1500));
       }
 
       setIsSuccess(true);
@@ -85,6 +106,7 @@ export default function BookingForm({ packages, onSubmit }: BookingFormProps) {
       setTimeout(() => {
         setFormData({
           name: '',
+          email: '',
           phone: '',
           eventDate: '',
           package: '',
@@ -93,9 +115,9 @@ export default function BookingForm({ packages, onSubmit }: BookingFormProps) {
         setTouched({});
         setIsSuccess(false);
       }, 3000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting form:', error);
-      setErrors({ name: 'Có lỗi xảy ra. Vui lòng thử lại.' });
+      setErrors({ name: error.message || 'Có lỗi xảy ra. Vui lòng thử lại.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -153,6 +175,42 @@ export default function BookingForm({ packages, onSubmit }: BookingFormProps) {
               />
             </svg>
             {errors.name}
+          </p>
+        )}
+      </div>
+
+      {/* Email Field */}
+      <div className="space-y-2">
+        <Label.Root
+          htmlFor="email"
+          className="text-sm font-semibold text-gray-900 flex items-center gap-2"
+        >
+          <Mail className="w-4 h-4 text-pink-600" />
+          Email <span className="text-rose-500">*</span>
+        </Label.Root>
+        <input
+          id="email"
+          type="email"
+          value={formData.email}
+          onChange={(e) => handleChange('email', e.target.value)}
+          onBlur={() => handleBlur('email')}
+          placeholder="example@email.com"
+          className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-pink-300 focus:ring-offset-2 ${
+            touched.email && errors.email
+              ? 'border-red-300 bg-red-50'
+              : 'border-pink-200 hover:border-pink-300 focus:border-pink-400'
+          }`}
+        />
+        {touched.email && errors.email && (
+          <p className="text-sm text-red-600 flex items-center gap-1">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+            {errors.email}
           </p>
         )}
       </div>

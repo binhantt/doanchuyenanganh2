@@ -7,6 +7,7 @@ import router from './router'
 import 'ant-design-vue/dist/reset.css'
 import './assets/tailwind.css'
 import './assets/main.css'
+import './styles/print.css'
 
 const app = createApp(App)
 

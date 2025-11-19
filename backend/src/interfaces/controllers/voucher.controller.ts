@@ -1,5 +1,26 @@
 import { Request, Response } from 'express';
 import { IVoucherService } from '../../application/interfaces/IVoucherService';
+import { Voucher } from '../../domain/entities/Voucher';
+import { VoucherDTO } from '../../application/dto/VoucherDTO';
+
+// Helper function to convert Voucher entity to simple DTO
+function toVoucherDTO(voucher: Voucher): VoucherDTO {
+  return {
+    id: voucher.id,
+    code: voucher.code,
+    title: voucher.name,
+    description: voucher.description || '',
+    discountType: voucher.discountType,
+    discountValue: voucher.discountValue,
+    maxDiscount: voucher.maxDiscountAmount || undefined,
+    minOrderAmount: voucher.minOrderValue || undefined,
+    startDate: voucher.startDate?.toISOString() || '',
+    endDate: voucher.endDate?.toISOString() || '',
+    isActive: voucher.isActive,
+    createdAt: voucher.createdAt?.toISOString() || '',
+    updatedAt: voucher.updatedAt?.toISOString() || '',
+  };
+}
 
 export class VoucherController {
   constructor(private readonly voucherService: IVoucherService) {}
@@ -9,7 +30,7 @@ export class VoucherController {
       const vouchers = await this.voucherService.getAllVouchers();
       res.json({
         success: true,
-        data: vouchers,
+        data: vouchers.map(toVoucherDTO),
       });
     } catch (error) {
       res.status(500).json({
@@ -25,7 +46,7 @@ export class VoucherController {
       const vouchers = await this.voucherService.getActiveVouchers();
       res.json({
         success: true,
-        data: vouchers,
+        data: vouchers.map(toVoucherDTO),
       });
     } catch (error) {
       res.status(500).json({
@@ -51,7 +72,7 @@ export class VoucherController {
 
       res.json({
         success: true,
-        data: voucher,
+        data: toVoucherDTO(voucher),
       });
     } catch (error) {
       res.status(500).json({
@@ -77,7 +98,7 @@ export class VoucherController {
 
       res.json({
         success: true,
-        data: voucher,
+        data: toVoucherDTO(voucher),
       });
     } catch (error) {
       res.status(500).json({
@@ -171,20 +192,18 @@ export class VoucherController {
     try {
       const {
         code,
-        name,
+        title,
         description,
         discountType,
         discountValue,
-        maxDiscountAmount,
-        minOrderValue,
-        usageLimit,
-        usagePerCustomer,
+        maxDiscount,
+        minOrderAmount,
         startDate,
         endDate,
         isActive,
       } = req.body;
 
-      if (!code || !name || !discountType || !discountValue) {
+      if (!code || !title || !discountType || !discountValue) {
         res.status(400).json({
           success: false,
           message: 'Missing required fields',
@@ -194,14 +213,14 @@ export class VoucherController {
 
       const voucher = await this.voucherService.createVoucher({
         code,
-        name,
+        name: title,
         description,
         discountType,
         discountValue: Number(discountValue),
-        maxDiscountAmount: maxDiscountAmount ? Number(maxDiscountAmount) : null,
-        minOrderValue: minOrderValue ? Number(minOrderValue) : null,
-        usageLimit: usageLimit ? Number(usageLimit) : null,
-        usagePerCustomer: usagePerCustomer ? Number(usagePerCustomer) : null,
+        maxDiscountAmount: maxDiscount ? Number(maxDiscount) : null,
+        minOrderValue: minOrderAmount ? Number(minOrderAmount) : null,
+        usageLimit: null,
+        usagePerCustomer: null,
         startDate: startDate ? new Date(startDate) : null,
         endDate: endDate ? new Date(endDate) : null,
         isActive: isActive !== undefined ? Boolean(isActive) : true,
@@ -209,8 +228,7 @@ export class VoucherController {
 
       res.status(201).json({
         success: true,
-        message: 'Voucher created successfully',
-        data: voucher,
+        data: toVoucherDTO(voucher),
       });
     } catch (error) {
       res.status(400).json({
@@ -227,18 +245,14 @@ export class VoucherController {
       const updateData: any = {};
 
       if (req.body.code) updateData.code = req.body.code;
-      if (req.body.name) updateData.name = req.body.name;
+      if (req.body.title) updateData.name = req.body.title;
       if (req.body.description !== undefined) updateData.description = req.body.description;
       if (req.body.discountType) updateData.discountType = req.body.discountType;
       if (req.body.discountValue !== undefined) updateData.discountValue = Number(req.body.discountValue);
-      if (req.body.maxDiscountAmount !== undefined)
-        updateData.maxDiscountAmount = req.body.maxDiscountAmount ? Number(req.body.maxDiscountAmount) : null;
-      if (req.body.minOrderValue !== undefined)
-        updateData.minOrderValue = req.body.minOrderValue ? Number(req.body.minOrderValue) : null;
-      if (req.body.usageLimit !== undefined)
-        updateData.usageLimit = req.body.usageLimit ? Number(req.body.usageLimit) : null;
-      if (req.body.usagePerCustomer !== undefined)
-        updateData.usagePerCustomer = req.body.usagePerCustomer ? Number(req.body.usagePerCustomer) : null;
+      if (req.body.maxDiscount !== undefined)
+        updateData.maxDiscountAmount = req.body.maxDiscount ? Number(req.body.maxDiscount) : null;
+      if (req.body.minOrderAmount !== undefined)
+        updateData.minOrderValue = req.body.minOrderAmount ? Number(req.body.minOrderAmount) : null;
       if (req.body.startDate !== undefined) updateData.startDate = req.body.startDate ? new Date(req.body.startDate) : null;
       if (req.body.endDate !== undefined) updateData.endDate = req.body.endDate ? new Date(req.body.endDate) : null;
       if (req.body.isActive !== undefined) updateData.isActive = Boolean(req.body.isActive);
@@ -255,8 +269,7 @@ export class VoucherController {
 
       res.json({
         success: true,
-        message: 'Voucher updated successfully',
-        data: voucher,
+        data: toVoucherDTO(voucher),
       });
     } catch (error) {
       res.status(400).json({

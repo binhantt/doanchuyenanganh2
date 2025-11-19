@@ -1,7 +1,14 @@
 import { CreateProductDTO, UpdateProductDTO, ProductResponseDTO } from '../dto/ProductDTO';
 
 export interface IProductService {
-  getAllProducts(filters?: { category?: string; isActive?: boolean; isFeatured?: boolean }): Promise<ProductResponseDTO[]>;
+  getAllProducts(filters?: { 
+    keyword?: string;
+    category?: string; 
+    isActive?: boolean; 
+    isFeatured?: boolean;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<ProductResponseDTO[]>;
   getProductById(id: string): Promise<ProductResponseDTO>;
   getProductBySlug(slug: string): Promise<ProductResponseDTO>;
   createProduct(data: CreateProductDTO): Promise<ProductResponseDTO>;

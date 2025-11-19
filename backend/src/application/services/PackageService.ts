@@ -7,11 +7,14 @@ import { v4 as uuidv4 } from 'uuid';
 export class PackageService implements IPackageService {
   constructor(private readonly packageRepository: IPackageRepository) {}
 
-  async getAllPackages(onlyActive: boolean = false): Promise<Package[]> {
-    if (onlyActive) {
-      return await this.packageRepository.findActive();
-    }
-    return await this.packageRepository.findAll();
+  async getAllPackages(filters?: {
+    keyword?: string;
+    isActive?: boolean;
+    isPopular?: boolean;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<Package[]> {
+    return await this.packageRepository.findAll(filters);
   }
 
   async getPackageById(id: string): Promise<Package | null> {

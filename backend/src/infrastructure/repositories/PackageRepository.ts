@@ -69,8 +69,43 @@ export class PackageRepository implements IPackageRepository {
     );
   }
 
-  async findAll(): Promise<Package[]> {
-    const rows = await db<PackageRow>(this.tableName).select('*');
+  async findAll(filters?: {
+    keyword?: string;
+    isActive?: boolean;
+    isPopular?: boolean;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<Package[]> {
+    let query = db<PackageRow>(this.tableName);
+
+    if (filters?.keyword) {
+      query = query.where((builder) => {
+        builder
+          .where('name', 'like', `%${filters.keyword}%`)
+          .orWhere('description', 'like', `%${filters.keyword}%`);
+      });
+    }
+    if (filters?.isActive !== undefined) {
+      query = query.where('is_active', filters.isActive);
+    }
+    if (filters?.isPopular !== undefined) {
+      query = query.where('is_popular', filters.isPopular);
+    }
+
+    // Map camelCase to snake_case for database columns
+    const columnMap: Record<string, string> = {
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      isPopular: 'is_popular',
+      isActive: 'is_active'
+    };
+    
+    const sortBy = filters?.sortBy || 'created_at';
+    const sortOrder = filters?.sortOrder || 'desc';
+    const dbColumn = columnMap[sortBy] || sortBy;
+    query = query.orderBy(dbColumn, sortOrder);
+
+    const rows = await query.select('*');
     return Promise.all(rows.map((row) => this.mapRowToEntity(row)));
   }
 

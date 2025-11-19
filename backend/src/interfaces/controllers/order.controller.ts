@@ -6,7 +6,15 @@ export class OrderController {
 
   async getAllOrders(req: Request, res: Response): Promise<void> {
     try {
-      const orders = await this.orderService.getAllOrders();
+      const { keyword, status, sortBy, sortOrder } = req.query;
+
+      const filters: any = {};
+      if (keyword) filters.keyword = keyword as string;
+      if (status) filters.status = status as string;
+      if (sortBy) filters.sortBy = sortBy as string;
+      if (sortOrder) filters.sortOrder = sortOrder as 'asc' | 'desc';
+
+      const orders = await this.orderService.getAllOrders(filters);
       res.json({
         success: true,
         data: orders,
@@ -153,6 +161,42 @@ export class OrderController {
       res.status(400).json({
         success: false,
         message: 'Failed to update order',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
+  async updateOrderStatus(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      if (!status) {
+        res.status(400).json({
+          success: false,
+          message: 'Status is required',
+        });
+        return;
+      }
+
+      const order = await this.orderService.updateOrder(id, { status });
+
+      if (!order) {
+        res.status(404).json({
+          success: false,
+          message: 'Order not found',
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        data: order,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: 'Failed to update order status',
         error: error instanceof Error ? error.message : 'Unknown error',
       });
     }

@@ -42,8 +42,41 @@ export class ConsultationRepository implements IConsultationRepository {
     );
   }
 
-  async findAll(): Promise<Consultation[]> {
-    const rows = await db<ConsultationRow>(this.tableName).select('*').orderBy('created_at', 'desc');
+  async findAll(filters?: {
+    keyword?: string;
+    status?: string;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<Consultation[]> {
+    let query = db<ConsultationRow>(this.tableName);
+
+    if (filters?.keyword) {
+      query = query.where((builder) => {
+        builder
+          .where('client_name', 'like', `%${filters.keyword}%`)
+          .orWhere('client_email', 'like', `%${filters.keyword}%`)
+          .orWhere('client_phone', 'like', `%${filters.keyword}%`)
+          .orWhere('venue', 'like', `%${filters.keyword}%`);
+      });
+    }
+    if (filters?.status) {
+      query = query.where('status', filters.status);
+    }
+
+    // Map camelCase to snake_case for database columns
+    const columnMap: Record<string, string> = {
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      weddingDate: 'wedding_date',
+      clientName: 'client_name',
+      guestCount: 'guest_count'
+    };
+
+    const sortBy = filters?.sortBy || 'created_at';
+    const sortOrder = filters?.sortOrder || 'desc';
+    const dbColumn = columnMap[sortBy] || sortBy;
+
+    const rows = await query.orderBy(dbColumn, sortOrder).select('*');
     return rows.map((row) => this.mapRowToEntity(row));
   }
 

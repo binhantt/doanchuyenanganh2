@@ -6,7 +6,16 @@ export class FAQController {
 
   async getAllFAQs(req: Request, res: Response): Promise<void> {
     try {
-      const faqs = await this.faqService.getAllFAQs();
+      const { keyword, category, isActive, sortBy, sortOrder } = req.query;
+
+      const filters: any = {};
+      if (keyword) filters.keyword = keyword as string;
+      if (category) filters.category = category as string;
+      if (isActive !== undefined) filters.isActive = isActive === 'true';
+      if (sortBy) filters.sortBy = sortBy as string;
+      if (sortOrder) filters.sortOrder = sortOrder as 'asc' | 'desc';
+
+      const faqs = await this.faqService.getAllFAQs(filters);
       res.json({
         success: true,
         data: faqs,
@@ -115,12 +124,12 @@ export class FAQController {
 
   async createFAQ(req: Request, res: Response): Promise<void> {
     try {
-      const { question, answer, category, language, displayOrder } = req.body;
+      const { question, answer, category, language, displayOrder, isActive } = req.body;
 
-      if (!question || !answer || !category || !language) {
+      if (!question || !answer || !category) {
         res.status(400).json({
           success: false,
-          message: 'Missing required fields',
+          message: 'Missing required fields: question, answer, category',
         });
         return;
       }
@@ -129,8 +138,9 @@ export class FAQController {
         question,
         answer,
         category,
-        language,
-        displayOrder: displayOrder || 0,
+        language: language || 'vi', // Default to Vietnamese
+        displayOrder: displayOrder !== undefined ? Number(displayOrder) : 0,
+        isActive: isActive !== undefined ? isActive : true,
       });
 
       res.status(201).json({
@@ -138,6 +148,7 @@ export class FAQController {
         data: faq,
       });
     } catch (error) {
+      console.error('Create FAQ error:', error);
       res.status(400).json({
         success: false,
         message: 'Failed to create FAQ',

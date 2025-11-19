@@ -6,7 +6,15 @@ export class ConsultationController {
 
   async getAllConsultations(req: Request, res: Response): Promise<void> {
     try {
-      const consultations = await this.consultationService.getAllConsultations();
+      const { keyword, status, sortBy, sortOrder } = req.query;
+
+      const filters: any = {};
+      if (keyword) filters.keyword = keyword as string;
+      if (status) filters.status = status as string;
+      if (sortBy) filters.sortBy = sortBy as string;
+      if (sortOrder) filters.sortOrder = sortOrder as 'asc' | 'desc';
+
+      const consultations = await this.consultationService.getAllConsultations(filters);
       res.json({
         success: true,
         data: consultations,

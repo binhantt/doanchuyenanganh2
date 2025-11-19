@@ -1,7 +1,14 @@
 import { Product } from '../entities/Product';
 
 export interface IProductRepository {
-  findAll(filters?: { category?: string; isActive?: boolean; isFeatured?: boolean }): Promise<Product[]>;
+  findAll(filters?: { 
+    keyword?: string;
+    category?: string; 
+    isActive?: boolean; 
+    isFeatured?: boolean;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<Product[]>;
   findById(id: string): Promise<Product | null>;
   findBySlug(slug: string): Promise<Product | null>;
   create(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<Product>;

@@ -6,7 +6,14 @@ import { Product } from '../../domain/entities/Product';
 export class ProductService implements IProductService {
   constructor(private productRepository: IProductRepository) {}
 
-  async getAllProducts(filters?: { category?: string; isActive?: boolean; isFeatured?: boolean }): Promise<ProductResponseDTO[]> {
+  async getAllProducts(filters?: { 
+    keyword?: string;
+    category?: string; 
+    isActive?: boolean; 
+    isFeatured?: boolean;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<ProductResponseDTO[]> {
     const products = await this.productRepository.findAll(filters);
     return products.map(this.mapToDTO);
   }
@@ -45,11 +52,11 @@ export class ProductService implements IProductService {
       description: data.description,
       price: data.price,
       category: data.category,
-      material: data.material,
+      material: null,
       features: data.features || [],
       images: data.images || [],
-      stockQuantity: data.stockQuantity || 0,
-      isFeatured: data.isFeatured || false,
+      stockQuantity: 0,
+      isFeatured: false,
       isActive: data.isActive !== undefined ? data.isActive : true,
     });
 

@@ -99,4 +99,27 @@ export const testimonialsApi = {
       throw error;
     }
   },
+
+  /**
+   * Submit testimonial (public - from landing page)
+   */
+  async submit(data: {
+    clientName: string;
+    clientRole?: string;
+    content: string;
+    rating: number;
+    eventDate?: string;
+    location?: string;
+    language?: string;
+  }): Promise<ApiResponse<Testimonial>> {
+    try {
+      const response = await apiClient.post(
+        `${API_CONFIG.ENDPOINTS.USER.TESTIMONIALS}/submit`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
