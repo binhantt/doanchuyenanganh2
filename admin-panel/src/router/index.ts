@@ -121,8 +121,6 @@ router.beforeEach(async (to, _from, next) => {
   
   // Check admin-only routes
   if (to.meta.requiresAdmin && authStore.user?.role !== 'admin') {
-    // Redirect staff to dashboard if trying to access admin-only pages
-    next('/')
     return
   }
   

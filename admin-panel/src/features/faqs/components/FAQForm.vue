@@ -4,6 +4,7 @@
     :label-col="{ span: 6 }"
     :wrapper-col="{ span: 18 }"
     @finish="$emit('submit', formData)"
+    class="faq-form"
   >
     <a-form-item label="Câu hỏi" required>
       <a-textarea
