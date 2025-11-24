@@ -39,6 +39,15 @@ export class AuthController {
         },
       });
     } catch (error) {
+      // Handle specific error for inactive account
+      if (error instanceof Error && error.message.includes('vô hiệu hóa')) {
+        res.status(403).json({
+          success: false,
+          message: error.message,
+        });
+        return;
+      }
+
       res.status(500).json({
         success: false,
         message: 'Login failed',

@@ -63,6 +63,37 @@ export class ProductController {
     }
   };
 
+  // For app - Get products by category
+  getProductsByCategory = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { category } = req.params;
+      const { isActive, isFeatured, sortBy, sortOrder } = req.query;
+      
+      const filters: any = {
+        category: category,
+      };
+      
+      if (isActive !== undefined) filters.isActive = isActive === 'true';
+      if (isFeatured !== undefined) filters.isFeatured = isFeatured === 'true';
+      if (sortBy) filters.sortBy = sortBy as string;
+      if (sortOrder) filters.sortOrder = sortOrder as 'asc' | 'desc';
+
+      const products = await this.productService.getAllProducts(filters);
+      
+      res.json({
+        success: true,
+        data: products,
+        count: products.length,
+        category: category,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error instanceof Error ? error.message : 'Có lỗi xảy ra',
+      });
+    }
+  };
+
   createProduct = async (req: Request, res: Response): Promise<void> => {
     try {
       const product = await this.productService.createProduct(req.body);

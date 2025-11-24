@@ -48,7 +48,27 @@ export class UserRepository implements IUserRepository {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const row = await db(this.tableName).where({ email }).first();
+    // Normalize email: trim and lowercase
+    const normalizedEmail = email.trim().toLowerCase();
+    console.log('🔍 [UserRepository] Searching for email:', normalizedEmail);
+    
+    const row = await db(this.tableName)
+      .whereRaw('LOWER(email) = ?', [normalizedEmail])
+      .first();
+    
+    console.log('🔍 [UserRepository] Query result:', row ? 'Found' : 'Not found');
+    if (row) {
+      console.log('🔍 [UserRepository] Raw data:', {
+        id: row.id,
+        email: row.email,
+        full_name: row.full_name,
+        role: row.role,
+        is_active: row.is_active,
+        password_exists: !!row.password,
+        password_length: row.password?.length
+      });
+    }
+    
     return row ? this.mapToEntity(row) : null;
   }
 

@@ -5,11 +5,73 @@ import { CreatePackageDTO, UpdatePackageDTO } from '../../application/dto/Packag
 export class PackageController {
   constructor(private readonly packageService: IPackageService) {}
 
+  // For app - Get all packages
+  async getAllPackages(req: Request, res: Response): Promise<void> {
+    try {
+      const { keyword, active, popular, sortBy, sortOrder } = req.query;
+
+      if (popular === 'true') {
+        const packages = await this.packageService.getPopularPackages();
+        res.status(200).json({
+          success: true,
+          data: packages,
+          count: packages.length,
+        });
+        return;
+      }
+
+      const filters: any = {};
+      if (keyword) filters.keyword = keyword as string;
+      if (active !== undefined) filters.isActive = active === 'true';
+      if (sortBy) filters.sortBy = sortBy as string;
+      if (sortOrder) filters.sortOrder = sortOrder as 'asc' | 'desc';
+
+      const packages = await this.packageService.getAllPackages(filters);
+
+      res.status(200).json({
+        success: true,
+        data: packages,
+        count: packages.length,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error instanceof Error ? error.message : 'Có lỗi xảy ra',
+      });
+    }
+  }
+
+  // For app - Get package by ID
+  async getPackageById(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const pkg = await this.packageService.getPackageById(id);
+
+      if (!pkg) {
+        res.status(404).json({
+          success: false,
+          message: 'Không tìm thấy gói dịch vụ',
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        data: pkg,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error instanceof Error ? error.message : 'Có lỗi xảy ra',
+      });
+    }
+  }
+
+  // Admin methods
   async list(req: Request, res: Response): Promise<Response> {
     try {
       const { keyword, active, popular, sortBy, sortOrder } = req.query;
 
-      // Handle special case for popular packages
       if (popular === 'true') {
         const packages = await this.packageService.getPopularPackages();
         return res.status(200).json({

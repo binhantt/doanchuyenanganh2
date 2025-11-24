@@ -127,6 +127,11 @@ import { DashboardController } from '../../controllers/dashboard.controller';
 
 const dashboardController = new DashboardController();
 
+// Monitoring DI
+import { MonitoringController } from '../../controllers/monitoring.controller';
+
+const monitoringController = new MonitoringController();
+
 // User DI
 import { UserController } from '../../controllers/user.controller';
 import { UserService } from '../../../application/services/UserService';
@@ -136,8 +141,30 @@ const userRepository = new UserRepository();
 const userService = new UserService(userRepository);
 const userController = new UserController(userService);
 
+// Auth DI
+import { AuthController } from '../../controllers/auth.controller';
+import { AuthService } from '../../../application/services/AuthService';
+
+const authService = new AuthService(userRepository);
+const authController = new AuthController(authService);
+
 // Define admin route groups
 const adminRouteGroups: RouteGroup[] = [
+  {
+    basePath: '/auth',
+    routes: [
+      {
+        method: 'post',
+        path: '/login',
+        handler: (req, res) => authController.login(req, res),
+      },
+      {
+        method: 'post',
+        path: '/verify',
+        handler: (req, res) => authController.verify(req, res),
+      },
+    ],
+  },
   {
     basePath: '/dashboard',
     routes: [
@@ -145,6 +172,26 @@ const adminRouteGroups: RouteGroup[] = [
         method: 'get',
         path: '/stats',
         handler: (req, res) => dashboardController.getStats(req, res),
+      },
+    ],
+  },
+  {
+    basePath: '/monitoring',
+    routes: [
+      {
+        method: 'get',
+        path: '/connections',
+        handler: (req, res) => monitoringController.getActiveConnections(req, res),
+      },
+      {
+        method: 'get',
+        path: '/stats',
+        handler: (req, res) => monitoringController.getConnectionStats(req, res),
+      },
+      {
+        method: 'get',
+        path: '/dashboard',
+        handler: (req, res) => monitoringController.getDashboard(req, res),
       },
     ],
   },
@@ -165,6 +212,11 @@ const adminRouteGroups: RouteGroup[] = [
         method: 'get',
         path: '/:id',
         handler: (req, res) => categoryController.getById(req, res),
+      },
+      {
+        method: 'get',
+        path: '/:id/products',
+        handler: (req, res) => productController.getAllProducts(req, res),
       },
       {
         method: 'post',

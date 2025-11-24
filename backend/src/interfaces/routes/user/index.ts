@@ -103,7 +103,15 @@ const promotionController = new PromotionController(promotionService);
 import { VoucherController } from '../../controllers/voucher.controller';
 import { VoucherService } from '../../../application/services/VoucherService';
 import { VoucherRepository } from '../../../infrastructure/repositories/VoucherRepository';
-
+import { ChatbotController } from '../../controllers/chatbot.controller';
+import { ChatbotService } from '../../../application/services/ChatbotService';
+const chatbotService = new ChatbotService(
+  packageRepository,
+  productRepository,
+  new (require('../../../infrastructure/repositories/ServiceRepository').ServiceRepository)(),
+  faqRepository
+);
+const chatbotController = new ChatbotController(chatbotService);
 const voucherRepository = new VoucherRepository();
 const voucherService = new VoucherService(voucherRepository);
 const voucherController = new VoucherController(voucherService);
@@ -375,7 +383,7 @@ const userRouteGroups: RouteGroup[] = [
         handler: (req, res) => orderController.createOrder(req, res),
       },
       {
-        method: 'post',
+        method: 'post' ,
         path: '/apply-voucher',
         handler: (req, res) => orderController.applyVoucher(req, res),
       },
@@ -388,6 +396,26 @@ const userRouteGroups: RouteGroup[] = [
         method: 'get',
         path: '/:id',
         handler: (req, res) => orderController.getOrderById(req, res),
+      },
+    ],
+  },
+  {
+    basePath: '/chatbot',
+    routes: [
+      {
+        method: 'post',
+        path: '/chat',
+        handler: (req, res) => chatbotController.sendMessage(req, res),
+      },
+      {
+        method: 'get',
+        path: '/quick-replies',
+        handler: (req, res) => chatbotController.getQuickReplies(req, res),
+      },
+      {
+        method: 'get',
+        path: '/info',
+        handler: (req, res) => chatbotController.getInfo(req, res),
       },
     ],
   },
