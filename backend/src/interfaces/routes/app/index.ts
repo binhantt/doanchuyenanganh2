@@ -47,13 +47,16 @@ const testimonialController = new TestimonialController(testimonialService);
 import { ChatbotController } from '../../controllers/chatbot.controller';
 import { ChatbotService } from '../../../application/services/ChatbotService';
 import { FAQRepository } from '../../../infrastructure/repositories/FAQRepository';
+import { ServiceRepository } from '../../../infrastructure/repositories/ServiceRepository';
 
 const faqRepository = new FAQRepository();
+const serviceRepository = new ServiceRepository();
 const chatbotService = new ChatbotService(
   packageRepository,
   productRepository,
-  new (require('../../../infrastructure/repositories/ServiceRepository').ServiceRepository)(),
-  faqRepository
+  serviceRepository,
+  faqRepository,
+   // Add gallery repository for images
 );
 const chatbotController = new ChatbotController(chatbotService);
 
@@ -165,7 +168,31 @@ const APP: RouteGroup[] = [
     ],
   },
   // Chatbot
- 
+  {
+    basePath: '/chatbot',
+    routes: [
+      {
+        method: 'post',
+        path: '/chat',
+        handler: (req, res) => chatbotController.sendMessage(req, res),
+      },
+      {
+        method: 'get',
+        path: '/quick-replies',
+        handler: (req, res) => chatbotController.getQuickReplies(req, res),
+      },
+      {
+        method: 'get',
+        path: '/info',
+        handler: (req, res) => chatbotController.getInfo(req, res),
+      },
+      {
+        method: 'post',
+        path: '/order',
+        handler: (req, res) => chatbotController.createOrder(req, res),
+      },
+    ],
+  },
 ];
 
 buildGroupedRoutes(router, APP);

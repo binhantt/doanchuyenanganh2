@@ -108,8 +108,9 @@ import { ChatbotService } from '../../../application/services/ChatbotService';
 const chatbotService = new ChatbotService(
   packageRepository,
   productRepository,
-  new (require('../../../infrastructure/repositories/ServiceRepository').ServiceRepository)(),
-  faqRepository
+  serviceRepository,
+  faqRepository,
+   // Add gallery repository for images
 );
 const chatbotController = new ChatbotController(chatbotService);
 const voucherRepository = new VoucherRepository();
@@ -416,6 +417,11 @@ const userRouteGroups: RouteGroup[] = [
         method: 'get',
         path: '/info',
         handler: (req, res) => chatbotController.getInfo(req, res),
+      },
+      {
+        method: 'post',
+        path: '/order',
+        handler: (req, res) => chatbotController.createOrder(req, res),
       },
     ],
   },

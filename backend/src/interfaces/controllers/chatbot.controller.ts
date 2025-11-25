@@ -38,7 +38,10 @@ export class ChatbotController {
       res.json({
         success: true,
         data: {
-          message: response,
+          message: response.message,
+          images: response.images,
+          products: response.products,
+          action: response.action,
           timestamp: new Date(),
         },
       });
@@ -47,6 +50,75 @@ export class ChatbotController {
       res.status(500).json({
         success: false,
         message: 'Có lỗi xảy ra. Vui lòng thử lại.',
+      });
+    }
+  }
+
+  // Create order from chatbot
+  async createOrder(req: Request, res: Response): Promise<void> {
+    try {
+      const {
+        productId,
+        productType,
+        clientName,
+        clientPhone,
+        clientEmail,
+        weddingDate,
+        venue,
+        guestCount,
+        notes,
+      } = req.body;
+
+      // Validate required fields
+      if (!productId || !productType || !clientName || !clientPhone || !weddingDate || !venue) {
+        res.status(400).json({
+          success: false,
+          message: 'Thiếu thông tin bắt buộc',
+        });
+        return;
+      }
+
+      // Validate product type
+      if (!['package', 'product', 'service'].includes(productType)) {
+        res.status(400).json({
+          success: false,
+          message: 'Loại sản phẩm không hợp lệ',
+        });
+        return;
+      }
+
+      // Create order
+      const result = await this.chatbotService.createOrderFromChat({
+        productId,
+        productType,
+        clientName,
+        clientPhone,
+        clientEmail,
+        weddingDate: new Date(weddingDate),
+        venue,
+        guestCount,
+        notes,
+      });
+
+      if (result.success) {
+        res.json({
+          success: true,
+          data: {
+            orderId: result.orderId,
+            message: result.message,
+          },
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: result.message,
+        });
+      }
+    } catch (error) {
+      console.error('Create order error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Có lỗi xảy ra khi tạo đơn hàng',
       });
     }
   }

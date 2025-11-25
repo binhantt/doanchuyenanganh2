@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import NavbarWrapper from "@/src/components/NavbarWrapper";
 import { Footer } from "@/src/features/footer";
+import { Chatbot } from "@/src/features/chat";
 
 export const metadata: Metadata = {
   title: "Wedding Studio - Dịch vụ tổ chức tiệc cưới chuyên nghiệp",
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
         <Footer />
+        <Chatbot />
       </body>
     </html>
   );
