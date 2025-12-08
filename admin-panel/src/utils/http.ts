@@ -13,7 +13,7 @@ const http: AxiosInstance = axios.create({
 // Request interceptor
 http.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('admin_token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -34,7 +34,8 @@ http.interceptors.response.use(
       const { status, data } = error.response
       
       if (status === 401) {
-        localStorage.removeItem('token')
+        localStorage.removeItem('admin_token')
+        localStorage.removeItem('admin_user')
         window.location.href = '/login'
         message.error('Phiên đăng nhập hết hạn')
       } else if (status === 403) {

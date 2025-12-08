@@ -25,7 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const response = await http.post<{ token: string; user: User }>('/auth/login', {
+      const response = await http.post<{ token: string; user: User }>('/admin/auth/login', {
         email,
         password
       })
@@ -59,7 +59,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!token.value) return false
 
     try {
-      const response = await http.get<{ user: User }>('/auth/verify')
+      const response = await http.get<{ user: User }>('/admin/auth/verify')
       if (response.data) {
         user.value = response.data.user
         isAuthenticated.value = true
