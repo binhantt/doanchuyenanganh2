@@ -80,11 +80,13 @@ export default function GalleryCarousel({
   }, [currentIndex, images.length]);
 
   return (
+   
     <div
       className="relative"
       onMouseEnter={() => setIsAutoPlaying(false)}
       onMouseLeave={() => setIsAutoPlaying(true)}
     >
+
       {/* Carousel Container */}
       <div className="relative overflow-hidden rounded-2xl">
         <div

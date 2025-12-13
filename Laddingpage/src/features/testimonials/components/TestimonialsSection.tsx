@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Sparkles, Grid3x3, Presentation } from 'lucide-react';
+import { useMemo } from 'react';
+import { Sparkles } from 'lucide-react';
 import TestimonialsGrid from './TestimonialsGrid';
-import TestimonialsCarousel from './TestimonialsCarousel';
 import { TestimonialsSectionProps, Testimonial } from '../types';
 import { useTestimonials } from '../../api/hooks';
 import { defaultTestimonials } from '../data';
@@ -25,10 +24,7 @@ export default function TestimonialsSection({
   title = 'Khách Hàng Nói Gì Về Chúng Tôi',
   subtitle = 'Những phản hồi chân thực từ các cặp đôi đã sử dụng dịch vụ của chúng tôi',
   testimonials: defaultTestimonialsParam,
-  layout: initialLayout = 'carousel',
-  showViewToggle = true,
 }: TestimonialsSectionProps) {
-  const [layout, setLayout] = useState<'grid' | 'carousel'>(initialLayout);
   const { testimonials: apiTestimonials, loading, error } = useTestimonials({ autoFetch: true });
 
   // Map API testimonials to component format
@@ -69,9 +65,9 @@ export default function TestimonialsSection({
         {/* Section Header */}
         <div className="text-center mb-12 space-y-4">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-pink-100 rounded-full">
-            <Sparkles className="w-4 h-4 text-pink-600" />
-            <span className="text-sm font-medium text-pink-600">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-rose-100 rounded-full">
+            <Sparkles className="w-4 h-4 text-rose-600" />
+            <span className="text-sm font-medium text-rose-600">
               Đánh giá từ khách hàng
             </span>
           </div>
@@ -116,49 +112,18 @@ export default function TestimonialsSection({
 
           {/* Decorative line */}
           <div className="flex items-center justify-center gap-2 pt-4">
-            <div className="w-12 h-1 bg-gradient-to-r from-transparent to-pink-300 rounded-full" />
-            <div className="w-2 h-2 bg-pink-400 rounded-full" />
-            <div className="w-8 h-1 bg-pink-400 rounded-full" />
-            <div className="w-2 h-2 bg-pink-400 rounded-full" />
-            <div className="w-12 h-1 bg-gradient-to-l from-transparent to-pink-300 rounded-full" />
+            <div className="w-12 h-1 bg-gradient-to-r from-transparent to-rose-300 rounded-full" />
+            <div className="w-2 h-2 bg-rose-400 rounded-full" />
+            <div className="w-8 h-1 bg-rose-400 rounded-full" />
+            <div className="w-2 h-2 bg-rose-400 rounded-full" />
+            <div className="w-12 h-1 bg-gradient-to-l from-transparent to-rose-300 rounded-full" />
           </div>
         </div>
-
-        {/* View Mode Toggle */}
-        {showViewToggle && !loading && testimonials.length > 0 && (
-          <div className="flex items-center justify-center gap-2 mb-12">
-            <button
-              onClick={() => setLayout('grid')}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-pink-300 focus:ring-offset-2 ${
-                layout === 'grid'
-                  ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg scale-105'
-                  : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-pink-300 hover:shadow-md'
-              }`}
-              aria-label="Grid view"
-            >
-              <Grid3x3 className="w-5 h-5" />
-              <span>Lưới</span>
-            </button>
-
-            <button
-              onClick={() => setLayout('carousel')}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-pink-300 focus:ring-offset-2 ${
-                layout === 'carousel'
-                  ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg scale-105'
-                  : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-pink-300 hover:shadow-md'
-              }`}
-              aria-label="Carousel view"
-            >
-              <Presentation className="w-5 h-5" />
-              <span>Trình chiếu</span>
-            </button>
-          </div>
-        )}
 
         {/* Loading State */}
         {loading && (
           <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-600"></div>
           </div>
         )}
 
@@ -169,14 +134,10 @@ export default function TestimonialsSection({
           </div>
         )}
 
-        {/* Testimonials Content */}
+        {/* Testimonials Content - Grid Only */}
         {!loading && testimonials.length > 0 && (
           <div className="relative">
-            {layout === 'grid' ? (
-              <TestimonialsGrid testimonials={testimonials} />
-            ) : (
-              <TestimonialsCarousel testimonials={testimonials} />
-            )}
+            <TestimonialsGrid testimonials={testimonials} />
           </div>
         )}
       </div>

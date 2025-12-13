@@ -7,8 +7,8 @@ import { corsMiddleware } from './interfaces/middlewares/cors.middleware';
 dotenv.config();
 const app = express();
 app.use(corsMiddleware);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/api', apiRoutes);
 
 

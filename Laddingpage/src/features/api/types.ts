@@ -88,6 +88,21 @@ export interface Product {
   updatedAt: string;
 }
 
+// Gallery Album types
+export interface GalleryAlbum {
+  id: string;
+  name: string;
+  description?: string;
+  coverImageUrl?: string;
+  coverImageId?: string;
+  imageCount: number;
+  displayOrder: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  images?: Gallery[];
+}
+
 // Gallery types
 export interface Gallery {
   id: string;
@@ -101,6 +116,7 @@ export interface Gallery {
   width?: number;
   height?: number;
   category: string;
+  albumId?: string;
   relatedId?: string;
   relatedType?: string;
   displayOrder: number;

@@ -1,2 +1,9 @@
 {
+    "python-envs.pythonProjects": [
+        {
+            "path": "Laddingpage/src/features/landing",
+            "envManager": "ms-python.python:venv",
+            "packageManager": "ms-python.python:pip"
+        }
+    ]
 }

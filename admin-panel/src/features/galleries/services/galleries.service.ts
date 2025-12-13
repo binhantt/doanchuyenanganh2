@@ -7,6 +7,7 @@ export const galleriesService = {
     
     if (filters?.keyword) params.append('keyword', filters.keyword)
     if (filters?.relatedType) params.append('relatedType', filters.relatedType)
+    if (filters?.albumId) params.append('albumId', filters.albumId)
     if (filters?.isActive !== undefined) params.append('isActive', filters.isActive.toString())
     if (filters?.sortBy) params.append('sortBy', filters.sortBy)
     if (filters?.sortOrder) params.append('sortOrder', filters.sortOrder)

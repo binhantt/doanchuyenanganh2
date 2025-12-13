@@ -13,6 +13,7 @@ export interface Gallery {
   height: number | null
   dimensions: string | null
   category: string
+  albumId: string | null
   relatedId: string | null
   relatedType: 'service' | 'package' | 'product' | 'decoration' | 'general'
   displayOrder: number
@@ -28,6 +29,7 @@ export interface GalleryFormData {
   altText?: string
   fileName?: string
   category?: string
+  albumId?: string
   relatedType: 'service' | 'package' | 'product' | 'decoration' | 'general'
   relatedId?: string
   isPrimary?: boolean
@@ -35,9 +37,38 @@ export interface GalleryFormData {
   isActive?: boolean
 }
 
+export interface Album {
+  id: string
+  name: string
+  description: string | null
+  coverImageId: string | null
+  coverImageUrl: string | null
+  imageCount: number
+  displayOrder: number
+  isActive: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface AlbumFormData {
+  name: string
+  description?: string
+  coverImageId?: string
+  displayOrder?: number
+  isActive?: boolean
+}
+
+export interface AlbumFilter {
+  keyword?: string
+  isActive?: boolean
+  sortBy?: 'name' | 'displayOrder' | 'createdAt'
+  sortOrder?: 'asc' | 'desc'
+}
+
 export interface GalleryFilter {
   keyword?: string
   relatedType?: string
+  albumId?: string
   isActive?: boolean
   sortBy?: 'title' | 'displayOrder' | 'createdAt'
   sortOrder?: 'asc' | 'desc'

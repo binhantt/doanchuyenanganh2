@@ -3,6 +3,7 @@ import { CreateGalleryDTO, UpdateGalleryDTO, GalleryResponseDTO } from '../dto/G
 export interface IGalleryService {
   getAllGalleries(filters?: {
     category?: string;
+    albumId?: string;
     relatedId?: string;
     relatedType?: string;
     isActive?: boolean;

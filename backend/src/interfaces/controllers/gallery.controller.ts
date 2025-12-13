@@ -1,16 +1,21 @@
 import { Request, Response } from 'express';
 import { IGalleryService } from '../../application/interfaces/IGalleryService';
+import { IAlbumService } from '../../application/interfaces/IAlbumService';
 
 export class GalleryController {
-  constructor(private galleryService: IGalleryService) {}
+  constructor(
+    private galleryService: IGalleryService,
+    private albumService?: IAlbumService
+  ) {}
 
   getAllGalleries = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { keyword, category, relatedId, relatedType, isActive, sortBy, sortOrder } = req.query;
+      const { keyword, category, albumId, relatedId, relatedType, isActive, sortBy, sortOrder } = req.query;
 
       const filters: any = {};
       if (keyword) filters.keyword = keyword as string;
       if (category) filters.category = category as string;
+      if (albumId) filters.albumId = albumId as string;
       if (relatedId) filters.relatedId = relatedId as string;
       if (relatedType) filters.relatedType = relatedType as string;
       if (isActive !== undefined) filters.isActive = isActive === 'true';
@@ -188,6 +193,158 @@ export class GalleryController {
       res.status(statusCode).json({
         success: false,
         message: error instanceof Error ? error.message : 'Bad request',
+      });
+    }
+  };
+
+  // Album methods
+  getAllAlbums = async (req: Request, res: Response): Promise<void> => {
+    try {
+      if (!this.albumService) {
+        res.status(501).json({
+          success: false,
+          message: 'Album service not available',
+        });
+        return;
+      }
+
+      const { isActive } = req.query;
+      const filters: any = {};
+      if (isActive !== undefined) filters.isActive = isActive === 'true';
+
+      const albums = await this.albumService.getAllAlbums(filters);
+      res.json({
+        success: true,
+        data: albums,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error instanceof Error ? error.message : 'Internal server error',
+      });
+    }
+  };
+
+  getAlbumById = async (req: Request, res: Response): Promise<void> => {
+    try {
+      if (!this.albumService) {
+        res.status(501).json({
+          success: false,
+          message: 'Album service not available',
+        });
+        return;
+      }
+
+      const { id } = req.params;
+      const album = await this.albumService.getAlbumById(id);
+      res.json({
+        success: true,
+        data: album,
+      });
+    } catch (error) {
+      const statusCode = error instanceof Error && error.message === 'Album not found' ? 404 : 500;
+      res.status(statusCode).json({
+        success: false,
+        message: error instanceof Error ? error.message : 'Internal server error',
+      });
+    }
+  };
+
+  getImagesByAlbum = async (req: Request, res: Response): Promise<void> => {
+    try {
+      if (!this.albumService) {
+        res.status(501).json({
+          success: false,
+          message: 'Album service not available',
+        });
+        return;
+      }
+
+      const albumId = req.params.albumId || req.params.id;
+      const images = await this.albumService.getImagesByAlbum(albumId);
+      res.json({
+        success: true,
+        data: images,
+      });
+    } catch (error) {
+      const statusCode = error instanceof Error && error.message === 'Album not found' ? 404 : 500;
+      res.status(statusCode).json({
+        success: false,
+        message: error instanceof Error ? error.message : 'Internal server error',
+      });
+    }
+  };
+
+  createAlbum = async (req: Request, res: Response): Promise<void> => {
+    try {
+      if (!this.albumService) {
+        res.status(501).json({
+          success: false,
+          message: 'Album service not available',
+        });
+        return;
+      }
+
+      const album = await this.albumService.createAlbum(req.body);
+      res.status(201).json({
+        success: true,
+        data: album,
+      });
+    } catch (error) {
+      const statusCode = error instanceof Error && error.message.includes('required') ? 400 : 500;
+      res.status(statusCode).json({
+        success: false,
+        message: error instanceof Error ? error.message : 'Bad request',
+      });
+    }
+  };
+
+  updateAlbum = async (req: Request, res: Response): Promise<void> => {
+    try {
+      if (!this.albumService) {
+        res.status(501).json({
+          success: false,
+          message: 'Album service not available',
+        });
+        return;
+      }
+
+      const { id } = req.params;
+      const album = await this.albumService.updateAlbum(id, req.body);
+      res.json({
+        success: true,
+        data: album,
+      });
+    } catch (error) {
+      const statusCode = error instanceof Error && error.message === 'Album not found' ? 404 : 400;
+      res.status(statusCode).json({
+        success: false,
+        message: error instanceof Error ? error.message : 'Bad request',
+      });
+    }
+  };
+
+  deleteAlbum = async (req: Request, res: Response): Promise<void> => {
+    try {
+      if (!this.albumService) {
+        res.status(501).json({
+          success: false,
+          message: 'Album service not available',
+        });
+        return;
+      }
+
+      const { id } = req.params;
+      await this.albumService.deleteAlbum(id);
+      res.json({
+        success: true,
+        message: 'Album deleted successfully',
+      });
+    } catch (error) {
+      const statusCode = error instanceof Error && error.message === 'Album not found' ? 404 : 500;
+      res.status(statusCode).json({
+        success: false,
+        message: error instanceof Error ? error.message : 'Internal server error',
       });
     }
   };

@@ -82,7 +82,7 @@ export class UserRepository implements IUserRepository {
     password: string;
     fullName: string;
     phone: string | null;
-    role: 'admin' | 'staff';
+    role: 'admin' | 'staff' | 'user';
   }): Promise<User> {
     const id = uuidv4();
     await db(this.tableName).insert({

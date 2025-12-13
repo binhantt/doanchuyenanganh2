@@ -7,13 +7,18 @@ export interface PackageFeatures {
 export interface Package {
   id: string;
   name: string;
+  slug?: string;
   price: number;
   currency?: string;
   description?: string;
   features: PackageFeatures;
   images: string[];
   popular?: boolean;
+  isPopular?: boolean;
   badge?: string;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface PackageCardProps {

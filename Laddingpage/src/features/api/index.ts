@@ -3,6 +3,8 @@
  * Central export point for all API services
  */
 
+export * as authApi from './auth';
+export { invitationsApi } from './invitations';
 export { packagesApi } from './packages';
 export { servicesApi } from './services';
 export { productsApi } from './products';

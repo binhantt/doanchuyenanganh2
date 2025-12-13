@@ -20,7 +20,7 @@ apiClient.interceptors.request.use(
   (config) => {
     // Add auth token if available
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('auth_token');
+      const token = localStorage.getItem('token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -38,10 +38,10 @@ apiClient.interceptors.response.use(
   (error: AxiosError) => {
     // Handle specific error codes
     if (error.response?.status === 401) {
-      // Unauthorized - clear token and redirect to login
+      // Unauthorized - clear token
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('auth_token');
-        window.location.href = '/login';
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
       }
     }
 

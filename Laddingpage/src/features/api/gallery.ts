@@ -5,7 +5,7 @@
 
 import apiClient from './client';
 import { API_CONFIG } from './config';
-import { ApiResponse, Gallery } from './types';
+import { ApiResponse, Gallery, GalleryAlbum } from './types';
 
 export const galleryApi = {
   /**
@@ -14,17 +14,61 @@ export const galleryApi = {
   async getAll(
     category?: string,
     relatedType?: string,
-    relatedId?: string
+    relatedId?: string,
+    albumId?: string
   ): Promise<ApiResponse<Gallery[]>> {
     try {
       const params: any = {};
       if (category) params.category = category;
       if (relatedType) params.relatedType = relatedType;
       if (relatedId) params.relatedId = relatedId;
+      if (albumId) params.albumId = albumId;
 
       const response = await apiClient.get(API_CONFIG.ENDPOINTS.USER.GALLERY, {
         params,
       });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Get all albums (public)
+   */
+  async getAllAlbums(): Promise<ApiResponse<GalleryAlbum[]>> {
+    try {
+      const response = await apiClient.get(
+        `${API_CONFIG.ENDPOINTS.USER.GALLERY}/albums`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Get album by ID with images
+   */
+  async getAlbumById(id: string): Promise<ApiResponse<GalleryAlbum>> {
+    try {
+      const response = await apiClient.get(
+        `${API_CONFIG.ENDPOINTS.USER.GALLERY}/albums/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Get images by album ID
+   */
+  async getImagesByAlbum(albumId: string): Promise<ApiResponse<Gallery[]>> {
+    try {
+      const response = await apiClient.get(
+        `${API_CONFIG.ENDPOINTS.USER.GALLERY}/albums/${albumId}/images`
+      );
       return response.data;
     } catch (error) {
       throw error;
@@ -150,6 +194,50 @@ export const galleryApi = {
     try {
       const response = await apiClient.delete(
         `${API_CONFIG.ENDPOINTS.ADMIN.GALLERY}/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Create album (admin)
+   */
+  async createAlbum(data: Partial<GalleryAlbum>): Promise<ApiResponse<GalleryAlbum>> {
+    try {
+      const response = await apiClient.post(
+        `${API_CONFIG.ENDPOINTS.ADMIN.GALLERY}/albums`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Update album (admin)
+   */
+  async updateAlbum(id: string, data: Partial<GalleryAlbum>): Promise<ApiResponse<GalleryAlbum>> {
+    try {
+      const response = await apiClient.put(
+        `${API_CONFIG.ENDPOINTS.ADMIN.GALLERY}/albums/${id}`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Delete album (admin)
+   */
+  async deleteAlbum(id: string): Promise<ApiResponse> {
+    try {
+      const response = await apiClient.delete(
+        `${API_CONFIG.ENDPOINTS.ADMIN.GALLERY}/albums/${id}`
       );
       return response.data;
     } catch (error) {

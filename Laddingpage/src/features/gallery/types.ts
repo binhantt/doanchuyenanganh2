@@ -4,8 +4,18 @@ export interface GalleryImage {
   alt: string;
   title?: string;
   category?: string;
+  albumId?: string;
   width?: number;
   height?: number;
+}
+
+export interface GalleryAlbum {
+  id: string;
+  name: string;
+  description?: string;
+  coverImageUrl?: string;
+  imageCount: number;
+  images?: GalleryImage[];
 }
 
 export interface GalleryItemProps {
@@ -18,6 +28,8 @@ export interface GallerySectionProps {
   title?: string;
   subtitle?: string;
   images?: GalleryImage[];
-  viewMode?: 'grid' | 'carousel';
+  albums?: GalleryAlbum[];
+  viewMode?: 'grid' | 'carousel' | 'albums';
   onImageClick?: (image: GalleryImage) => void;
+  onAlbumClick?: (album: GalleryAlbum) => void;
 }

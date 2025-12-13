@@ -1,6 +1,9 @@
 import { Knex } from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
+  const exists = await knex.schema.hasTable('testimonials');
+  if (exists) return;
+  
   await knex.schema.createTable('testimonials', (table) => {
     table.uuid('id').primary();
     table.string('client_name', 255).notNullable();

@@ -9,6 +9,7 @@ export interface CreateGalleryDTO {
   width?: number;
   height?: number;
   category: string;
+  albumId?: string;
   relatedId?: string;
   relatedType?: string;
   displayOrder?: number;
@@ -20,6 +21,7 @@ export interface UpdateGalleryDTO {
   title?: string;
   altText?: string;
   category?: string;
+  albumId?: string;
   relatedId?: string;
   relatedType?: string;
   displayOrder?: number;
@@ -42,6 +44,7 @@ export interface GalleryResponseDTO {
   height: number | null;
   dimensions: string | null;
   category: string;
+  albumId: string | null;
   relatedId: string | null;
   relatedType: string | null;
   displayOrder: number;

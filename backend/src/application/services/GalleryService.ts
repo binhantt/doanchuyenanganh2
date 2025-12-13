@@ -8,6 +8,7 @@ export class GalleryService implements IGalleryService {
 
   async getAllGalleries(filters?: {
     category?: string;
+    albumId?: string;
     relatedId?: string;
     relatedType?: string;
     isActive?: boolean;
@@ -56,6 +57,7 @@ export class GalleryService implements IGalleryService {
       width: data.width || null,
       height: data.height || null,
       category: data.category,
+      albumId: (data as any).albumId || null,
       relatedId: data.relatedId || null,
       relatedType: data.relatedType || null,
       displayOrder: data.displayOrder || 0,
@@ -136,6 +138,7 @@ export class GalleryService implements IGalleryService {
       height: gallery.height,
       dimensions: gallery.getDimensions(),
       category: gallery.category,
+      albumId: gallery.albumId,
       relatedId: gallery.relatedId,
       relatedType: gallery.relatedType,
       displayOrder: gallery.displayOrder,

@@ -22,6 +22,10 @@ export const API_CONFIG = {
   ENDPOINTS: {
     // User/Public endpoints
     USER: {
+      AUTH_LOGIN: '/user/auth/login',
+      AUTH_REGISTER: '/user/auth/register',
+      AUTH_VERIFY: '/user/auth/verify',
+      INVITATIONS: '/user/invitations',
       PACKAGES: '/user/packages',
       PACKAGES_POPULAR: '/user/packages/popular',
       PACKAGES_SLUG: '/user/packages/slug',

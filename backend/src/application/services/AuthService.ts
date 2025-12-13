@@ -66,6 +66,71 @@ export class AuthService {
     return { token, user };
   }
 
+  async register(data: {
+    email: string;
+    password: string;
+    fullName: string;
+    phone?: string | null;
+  }): Promise<{ token: string; user: User }> {
+    console.log('\n========== REGISTER DEBUG ==========');
+    console.log('Input email:', data.email);
+    console.log('Input fullName:', data.fullName);
+
+    const normalizedEmail = data.email.trim().toLowerCase();
+
+    // Check if email already exists
+    const existingUser = await this.userRepository.findByEmail(normalizedEmail);
+    if (existingUser) {
+      console.log('❌ Register failed: Email already exists -', normalizedEmail);
+      console.log('====================================\n');
+      throw new Error('Email đã tồn tại trong hệ thống');
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+    console.log('Password hashed successfully');
+
+    // Create user
+    console.log('Creating user with data:', {
+      email: normalizedEmail,
+      fullName: data.fullName,
+      phone: data.phone || null,
+      role: 'user',
+      hasPassword: !!hashedPassword,
+    });
+
+    try {
+      const newUser = await this.userRepository.create({
+        email: normalizedEmail,
+        password: hashedPassword,
+        fullName: data.fullName,
+        phone: data.phone || null,
+        role: 'user', // Default role
+      });
+
+      console.log('✅ User created:', newUser.email);
+      console.log('User ID:', newUser.id);
+      console.log('====================================\n');
+
+      // Generate JWT token
+      const token = jwt.sign(
+        {
+          id: newUser.id,
+          email: newUser.email,
+          role: newUser.role,
+        },
+        process.env.JWT_SECRET || 'your-secret-key',
+        { expiresIn: '7d' }
+      );
+
+      return { token, user: newUser };
+    } catch (error) {
+      console.error('❌ Error creating user:', error);
+      console.log('====================================\n');
+      throw new Error('Không thể tạo tài khoản. Vui lòng thử lại.');
+    }
+  }
+
   async verifyToken(token: string): Promise<User | null> {
     try {
       const decoded = jwt.verify(

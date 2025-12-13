@@ -15,7 +15,7 @@ export interface IUserRepository {
     password: string;
     fullName: string;
     phone: string | null;
-    role: 'admin' | 'staff';
+    role: 'admin' | 'staff' | 'user';
   }): Promise<User>;
   update(id: string, data: Partial<User>): Promise<User | null>;
   delete(id: string): Promise<boolean>;

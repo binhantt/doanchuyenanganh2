@@ -15,10 +15,14 @@ const router = Router();
 import { GalleryController } from '../../controllers/gallery.controller';
 import { GalleryService } from '../../../application/services/GalleryService';
 import { GalleryRepository } from '../../../infrastructure/repositories/GalleryRepository';
+import { AlbumService } from '../../../application/services/AlbumService';
+import { AlbumRepository } from '../../../infrastructure/repositories/AlbumRepository';
 
 const galleryRepository = new GalleryRepository();
 const galleryService = new GalleryService(galleryRepository);
-const galleryController = new GalleryController(galleryService);
+const albumRepository = new AlbumRepository();
+const albumService = new AlbumService(albumRepository, galleryRepository);
+const galleryController = new GalleryController(galleryService, albumService);
 
 // Category DI
 import { CategoryController } from '../../controllers/category.controller';
@@ -157,6 +161,11 @@ const adminRouteGroups: RouteGroup[] = [
         method: 'post',
         path: '/login',
         handler: (req, res) => authController.login(req, res),
+      },
+      {
+        method: 'post',
+        path: '/register',
+        handler: (req, res) => authController.register(req, res),
       },
       {
         method: 'post',
@@ -407,6 +416,36 @@ const adminRouteGroups: RouteGroup[] = [
         method: 'get',
         path: '/',
         handler: (req, res) => galleryController.getAllGalleries(req, res),
+      },
+      {
+        method: 'get',
+        path: '/albums',
+        handler: (req, res) => galleryController.getAllAlbums(req, res),
+      },
+      {
+        method: 'get',
+        path: '/albums/:id',
+        handler: (req, res) => galleryController.getAlbumById(req, res),
+      },
+      {
+        method: 'get',
+        path: '/albums/:albumId/images',
+        handler: (req, res) => galleryController.getImagesByAlbum(req, res),
+      },
+      {
+        method: 'post',
+        path: '/albums',
+        handler: (req, res) => galleryController.createAlbum(req, res),
+      },
+      {
+        method: 'put',
+        path: '/albums/:id',
+        handler: (req, res) => galleryController.updateAlbum(req, res),
+      },
+      {
+        method: 'delete',
+        path: '/albums/:id',
+        handler: (req, res) => galleryController.deleteAlbum(req, res),
       },
       {
         method: 'get',

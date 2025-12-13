@@ -38,6 +38,25 @@
       />
     </a-form-item>
 
+    <a-form-item label="Album">
+      <a-select
+        v-model:value="formData.albumId"
+        placeholder="Chọn album (tùy chọn)"
+        allowClear
+        showSearch
+        :filterOption="filterAlbumOption"
+        style="width: 100%"
+      >
+        <a-select-option
+          v-for="album in availableAlbums"
+          :key="album.id"
+          :value="album.id"
+        >
+          {{ album.name }} ({{ album.imageCount }} ảnh)
+        </a-select-option>
+      </a-select>
+    </a-form-item>
+
     <a-form-item label="Loại" required>
       <a-select v-model:value="formData.relatedType" placeholder="Chọn loại">
         <a-select-option v-for="type in RELATED_TYPES" :key="type.value" :value="type.value">
@@ -80,12 +99,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import BaseInput from '@/components/common/input/BaseInput.vue'
 import BaseTextarea from '@/components/common/input/BaseTextarea.vue'
 import SubmitButton from '@/components/common/button/SubmitButton.vue'
-import type { GalleryFormData } from '../types/gallery.types'
+import type { GalleryFormData, Album } from '../types/gallery.types'
 import { RELATED_TYPES } from '../types/gallery.types'
+import { albumsService } from '../services/albums.service'
 
 const props = defineProps<{
   initialData?: GalleryFormData
@@ -104,6 +124,7 @@ const formData = ref<GalleryFormData>({
   altText: '',
   fileName: '',
   category: 'product',
+  albumId: undefined,
   relatedType: 'general',
   relatedId: undefined,
   isPrimary: false,
@@ -112,10 +133,30 @@ const formData = ref<GalleryFormData>({
 })
 
 const errors = ref<Record<string, string>>({})
+const availableAlbums = ref<Album[]>([])
+
+const filterAlbumOption = (input: string, option: any) => {
+  return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+}
+
+const fetchAlbums = async () => {
+  try {
+    const response = await albumsService.getAlbums({ isActive: true })
+    if (response.data) {
+      availableAlbums.value = response.data
+    }
+  } catch (error) {
+    console.error('Failed to fetch albums:', error)
+  }
+}
 
 watch(() => props.initialData, (newData) => {
   if (newData) {
     formData.value = { ...newData }
   }
 }, { immediate: true })
+
+onMounted(() => {
+  fetchAlbums()
+})
 </script>

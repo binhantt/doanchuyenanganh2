@@ -9,6 +9,7 @@ export class GalleryRepository implements IGalleryRepository {
   async findAll(filters?: {
     keyword?: string;
     category?: string;
+    albumId?: string;
     relatedId?: string;
     relatedType?: string;
     isActive?: boolean;
@@ -26,6 +27,9 @@ export class GalleryRepository implements IGalleryRepository {
     }
     if (filters?.category) {
       query = query.where('category', filters.category);
+    }
+    if (filters?.albumId) {
+      query = query.where('album_id', filters.albumId);
     }
     if (filters?.relatedId) {
       query = query.where('related_id', filters.relatedId);
@@ -67,6 +71,14 @@ export class GalleryRepository implements IGalleryRepository {
     return rows.map(this.mapToEntity);
   }
 
+  async findByAlbum(albumId: string): Promise<Gallery[]> {
+    const rows = await db(this.tableName)
+      .where({ album_id: albumId, is_active: true })
+      .orderBy('display_order', 'asc')
+      .orderBy('created_at', 'desc');
+    return rows.map(this.mapToEntity);
+  }
+
   async findPrimaryByRelated(relatedId: string, relatedType: string): Promise<Gallery | null> {
     const row = await db(this.tableName)
       .where({ related_id: relatedId, related_type: relatedType, is_primary: true, is_active: true })
@@ -90,6 +102,7 @@ export class GalleryRepository implements IGalleryRepository {
       width: gallery.width,
       height: gallery.height,
       category: gallery.category,
+      album_id: gallery.albumId,
       related_id: gallery.relatedId,
       related_type: gallery.relatedType,
       display_order: gallery.displayOrder,
@@ -113,6 +126,7 @@ export class GalleryRepository implements IGalleryRepository {
     if (gallery.title !== undefined) data.title = gallery.title;
     if (gallery.altText !== undefined) data.alt_text = gallery.altText;
     if (gallery.category !== undefined) data.category = gallery.category;
+    if (gallery.albumId !== undefined) data.album_id = gallery.albumId;
     if (gallery.relatedId !== undefined) data.related_id = gallery.relatedId;
     if (gallery.relatedType !== undefined) data.related_type = gallery.relatedType;
     if (gallery.displayOrder !== undefined) data.display_order = gallery.displayOrder;
@@ -162,6 +176,7 @@ export class GalleryRepository implements IGalleryRepository {
       row.width,
       row.height,
       row.category,
+      row.album_id || null,
       row.related_id,
       row.related_type,
       row.display_order,

@@ -56,6 +56,75 @@ export class AuthController {
     }
   }
 
+  async register(req: Request, res: Response): Promise<void> {
+    try {
+      const { email, password, fullName, phone } = req.body;
+
+      // Validate required fields
+      if (!email || !password || !fullName) {
+        res.status(400).json({
+          success: false,
+          message: 'Email, password và họ tên là bắt buộc',
+        });
+        return;
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        res.status(400).json({
+          success: false,
+          message: 'Email không hợp lệ',
+        });
+        return;
+      }
+
+      // Validate password length
+      if (password.length < 6) {
+        res.status(400).json({
+          success: false,
+          message: 'Mật khẩu phải có ít nhất 6 ký tự',
+        });
+        return;
+      }
+
+      const result = await this.authService.register({
+        email,
+        password,
+        fullName,
+        phone: phone || null,
+      });
+
+      res.status(201).json({
+        success: true,
+        data: {
+          token: result.token,
+          user: {
+            id: result.user.id,
+            email: result.user.email,
+            fullName: result.user.fullName,
+            role: result.user.role,
+          },
+        },
+        message: 'Đăng ký thành công!',
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('đã tồn tại')) {
+        res.status(409).json({
+          success: false,
+          message: error.message,
+        });
+        return;
+      }
+
+      res.status(500).json({
+        success: false,
+        message: 'Đăng ký thất bại',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
   async verify(req: Request, res: Response): Promise<void> {
     try {
       const token = req.headers.authorization?.replace('Bearer ', '');

@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, Heart, ShoppingCart } from 'lucide-react';
+import { Menu, Heart, ShoppingCart, LogIn } from 'lucide-react';
 import { navLinks } from './data';
 import { NavbarProps } from './types';
 import { NavLink } from './components/NavLink';
 import { MobileMenu } from './components/MobileMenu';
 import { useCartStore } from '@/src/features/order/store/useCartStore';
+import { LoginDialog, RegisterDialog } from '@/src/features/auth';
 
 export default function Navbar({ currentPath = '/' }: NavbarProps) {
   const { getTotalItems } = useCartStore();
@@ -15,6 +16,12 @@ export default function Navbar({ currentPath = '/' }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [openLogin, setOpenLogin] = useState(false);
+  const [openRegister, setOpenRegister] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const discountCode = 'WED10';
 
   // Hide/Show navbar on scroll
   useEffect(() => {
@@ -38,6 +45,29 @@ export default function Navbar({ currentPath = '/' }: NavbarProps) {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
+
+  // Check auth token on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      setIsLoggedIn(!!token);
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        try {
+          const parsed = JSON.parse(storedUser);
+          const name =
+            parsed?.fullName ||
+            parsed?.name ||
+            parsed?.username ||
+            parsed?.email ||
+            '';
+          setUserName(name);
+        } catch (e) {
+          // ignore parse error
+        }
+      }
+    }
+  }, []);
 
   return (
     <>
@@ -85,8 +115,59 @@ export default function Navbar({ currentPath = '/' }: NavbarProps) {
             </div>
 
             {/* Desktop Actions */}
-            <div className="hidden md:flex items-center gap-4">
-              {/* Cart Button */}
+            <div className="hidden md:flex items-center gap-3">
+              {isLoggedIn ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowUserMenu((v) => !v)}
+                    className="flex items-center gap-2 px-4 py-2 bg-rose-50 text-rose-700 font-semibold rounded-full border border-rose-200 hover:bg-rose-100 transition-all duration-150"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-rose-500 to-pink-600 text-white flex items-center justify-center text-sm font-bold">
+                      {userName ? userName.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    <span className="whitespace-nowrap max-w-[160px] truncate">
+                      {userName || 'Người dùng'}
+                    </span>
+                  </button>
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-rose-100 p-2 z-50">
+                      <div className="px-3 py-2 text-sm text-rose-700 font-semibold bg-rose-50 rounded-lg border border-rose-100 mb-2">
+                        Ưu đãi của bạn: <span className="font-bold">{discountCode}</span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          window.location.href = '/invitations';
+                        }}
+                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-rose-50 text-gray-800 font-medium"
+                      >
+                        Thiệp cưới online
+                      </button>
+                      <button
+                        onClick={() => {
+                          localStorage.removeItem('token');
+                          localStorage.removeItem('user');
+                          setIsLoggedIn(false);
+                          setUserName('');
+                          setShowUserMenu(false);
+                        }}
+                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-rose-50 text-rose-600 font-semibold"
+                      >
+                        Thoát
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={() => setOpenLogin(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 border-2 border-rose-300 text-rose-600 font-semibold rounded-full hover:bg-rose-50 hover:border-rose-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-2"
+                >
+                  <LogIn className="w-5 h-5" />
+                  Đăng nhập
+                </button>
+              )}
+
               <Link
                 href="/order"
                 className="relative p-3 rounded-full hover:bg-pink-100 focus:outline-none focus:ring-2 focus:ring-pink-400 transition-colors"
@@ -98,25 +179,6 @@ export default function Navbar({ currentPath = '/' }: NavbarProps) {
                     {totalItems}
                   </span>
                 )}
-              </Link>
-
-              {/* CTA Button */}
-              <Link
-                href="/booking"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-600 text-white font-semibold rounded-full hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-2 transition-all duration-300"
-              >
-                Đặt lịch ngay
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
               </Link>
             </div>
 
@@ -139,8 +201,35 @@ export default function Navbar({ currentPath = '/' }: NavbarProps) {
           onClose={() => setIsOpen(false)}
           navLinks={navLinks}
           currentPath={currentPath}
+          isLoggedIn={isLoggedIn}
+          userName={userName}
+          onOpenLogin={() => setOpenLogin(true)}
         />
       </nav>
+
+      {/* Auth Modals */}
+      <LoginDialog
+        open={openLogin}
+        onOpenChange={setOpenLogin}
+        onSwitchToRegister={() => {
+          setOpenLogin(false);
+          setOpenRegister(true);
+        }}
+        onLoginSuccess={(user) => {
+          setIsLoggedIn(true);
+          const name =
+            user?.fullName || user?.name || user?.username || user?.email || '';
+          setUserName(name);
+        }}
+      />
+      <RegisterDialog
+        open={openRegister}
+        onOpenChange={setOpenRegister}
+        onSwitchToLogin={() => {
+          setOpenRegister(false);
+          setOpenLogin(true);
+        }}
+      />
     </>
   );
 }

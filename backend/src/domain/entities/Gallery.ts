@@ -11,6 +11,7 @@ export class Gallery {
     public readonly width: number | null,
     public readonly height: number | null,
     public readonly category: string,
+    public readonly albumId: string | null,
     public readonly relatedId: string | null,
     public readonly relatedType: string | null,
     public readonly displayOrder: number = 0,

@@ -10,6 +10,10 @@ interface MobileMenuProps {
   onClose: () => void;
   navLinks: NavItem[];
   currentPath: string;
+  onOpenLogin?: () => void;
+  isLoggedIn?: boolean;
+  discountCode?: string;
+  userName?: string;
 }
 
 export function MobileMenu({
@@ -17,6 +21,10 @@ export function MobileMenu({
   onClose,
   navLinks,
   currentPath,
+  onOpenLogin,
+  isLoggedIn = false,
+  discountCode = 'WED10',
+  userName = '',
 }: MobileMenuProps) {
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, link: NavItem) => {
     if (link.scrollTo) {
@@ -90,38 +98,81 @@ export function MobileMenu({
             </nav>
 
             {/* CTA Button */}
-            <div className="p-6 border-t border-pink-100">
-              <Link
-                href="#booking"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const element = document.getElementById('booking');
-                  if (element) {
-                    const navbarHeight = 80;
-                    const elementPosition = element.getBoundingClientRect().top;
-                    const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
-                    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-                  }
-                  onClose();
-                }}
-                className="flex items-center justify-center gap-2 w-full px-6 py-4 bg-gradient-to-r from-rose-500 to-pink-600 text-white font-semibold text-center rounded-full 
-                  hover:shadow-lg hover:scale-[1.02] 
-                  focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-2
-                  transition-all duration-200"
-              >
-                Đặt lịch ngay
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </Link>
+            <div className="p-6 border-t border-pink-100 space-y-3">
+              {!isLoggedIn ? (
+                <>
+                  <button
+                    onClick={() => {
+                      onClose();
+                      onOpenLogin?.();
+                    }}
+                    className="flex items-center justify-center gap-2 w-full px-6 py-4 border-2 border-rose-300 text-rose-600 font-semibold rounded-full hover:bg-rose-50 hover:border-rose-400 transition-all duration-200"
+                  >
+                    Đăng nhập
+                  </button>
+                  <Link
+                    href="#booking"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const element = document.getElementById('booking');
+                      if (element) {
+                        const navbarHeight = 80;
+                        const elementPosition = element.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+                        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+                      }
+                      onClose();
+                    }}
+                    className="flex items-center justify-center gap-2 w-full px-6 py-4 bg-gradient-to-r from-rose-500 to-pink-600 text-white font-semibold text-center rounded-full 
+                      hover:shadow-lg hover:scale-[1.02] 
+                      focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-2
+                      transition-all duration-200"
+                  >
+                    Đặt lịch ngay
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </Link>
+                </>
+              ) : (
+                <div className="space-y-3">
+                  <div className="w-full rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 font-semibold text-center space-y-1">
+                    <div>Xin chào, {userName || 'khách'}</div>
+                    <div>
+                      Ưu đãi của bạn: <span className="font-bold">{discountCode}</span>
+                    </div>
+                  </div>
+                  <Link
+                    href="/invitations"
+                    onClick={() => onClose()}
+                    className="flex items-center justify-center gap-2 w-full px-6 py-4 bg-gradient-to-r from-rose-500 to-pink-600 text-white font-semibold text-center rounded-full 
+                      hover:shadow-lg hover:scale-[1.02] 
+                      focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-2
+                      transition-all duration-200"
+                  >
+                    Tạo thiệp cưới online
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </Dialog.Content>

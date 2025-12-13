@@ -1,2 +1,3 @@
-export { default as WeddingPackages } from './WeddingPackages';
 export { default as PackageCard } from './PackageCard';
+export { default as PackageShowcase } from '../pages/PackageShowcase';
+

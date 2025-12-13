@@ -5,7 +5,7 @@ export class User {
     public readonly password: string,
     public readonly fullName: string,
     public readonly phone: string | null,
-    public readonly role: 'admin' | 'staff',
+    public readonly role: 'admin' | 'staff' | 'user',
     public readonly isActive: boolean = true,
     public readonly emailVerifiedAt: Date | null = null,
     public readonly createdAt?: Date,
@@ -18,6 +18,10 @@ export class User {
 
   isStaff(): boolean {
     return this.role === 'staff';
+  }
+
+  isUser(): boolean {
+    return this.role === 'user';
   }
 
   isVerified(): boolean {
